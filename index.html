@@ -14,32 +14,30 @@
 <body>
 <div class="layout">
   <aside class="sidebar">
+    <button class="sb-toggle" id="sbToggle" type="button" aria-label="Contraer menú" title="Contraer menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg>
+    </button>
     <div class="sb-brand">
       <div class="sb-logo"><img src="assets/img/escudo-unimagdalena.png" alt="Escudo Universidad del Magdalena"></div>
       <div class="sb-title">UNIMAGDALENA<span>Indicadores por Factor</span></div>
-    </div>
-    <div class="sb-kpis">
-      <div class="sb-kpi"><b id="kf">—</b><span>Factores</span></div>
-      <div class="sb-kpi"><b id="ki">—</b><span>Indic.</span></div>
-      <div class="sb-kpi"><b id="ky">—</b><span>Años</span></div>
     </div>
 
     <!-- Menú principal (4 páginas) -->
     <div class="sb-label">Menú</div>
     <nav class="nav nav--pages" id="pageNav">
-      <button class="nav__item" data-page="inicio">
+      <button class="nav__item" data-page="inicio" title="Inicio">
         <span class="nav__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span>
         <span class="nav__txt">Inicio</span>
       </button>
-      <button class="nav__item" data-page="factores">
+      <button class="nav__item" data-page="factores" title="Factores">
         <span class="nav__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8.5 12 14l10-5.5L12 3Z"/><path d="m2 15.5 10 5.5 10-5.5"/></svg></span>
         <span class="nav__txt">Factores</span>
       </button>
-      <button class="nav__item" data-page="datos">
+      <button class="nav__item" data-page="datos" title="Datos">
         <span class="nav__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg></span>
         <span class="nav__txt">Datos</span>
       </button>
-      <button class="nav__item" data-page="metodologia">
+      <button class="nav__item" data-page="metodologia" title="Metodología">
         <span class="nav__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15.5H5.5A1.5 1.5 0 0 0 4 20V4.5Z"/><path d="M4 20a1.5 1.5 0 0 0 1.5 1.5H20"/></svg></span>
         <span class="nav__txt">Metodología</span>
       </button>

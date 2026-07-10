@@ -345,7 +345,10 @@ const ICO={
   gochev:'<path d="M5 12h14M13 6l6 6-6 6"/>',
   mstack:'<path d="M12 3 2 8.5 12 14l10-5.5L12 3Z"/><path d="m2 12.5 10 5.5 10-5.5"/>',
   mhist:'<path d="M4 4v16h16"/><rect x="7" y="11" width="2.6" height="6" rx=".6"/><rect x="11.7" y="8" width="2.6" height="9" rx=".6"/><rect x="16.4" y="12.5" width="2.6" height="4.5" rx=".6"/>',
-  mcal:'<rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M8.4 15.6l2.2-2.2 2 2 2.4-2.9"/>'
+  mcal:'<rect x="3.5" y="5" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M8 3v4M16 3v4"/><path d="M8.4 15.6l2.2-2.2 2 2 2.4-2.9"/>',
+  dl:'<path d="M12 3v12M7 11l5 5 5-5M5 20h14"/>',
+  sheet:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M4 9h16M4 15h16M10 3v18"/>',
+  gochevdown:'<path d="m6 9 6 6 6-6"/>'
 };
 
 const FACTORES_INFO=[
@@ -479,42 +482,74 @@ function renderMetodologia(){
 
 /* ---------- Página DATOS ---------- */
 let datosQuery='';
+let datosFactor=-1;   // -1 = todos los factores
+
 function renderDatos(){
   const rows=[];
-  DB.factors.forEach(f=>f.indicators.forEach(ind=>rows.push({f, ind})));
+  DB.factors.forEach((f,fi)=>f.indicators.forEach((ind,ii)=>rows.push({f, ind, fi, ii})));
+  const total=rows.length;
+  const q=datosQuery.toLowerCase();
   const filtered=rows.filter(r=>{
-    const q=datosQuery.toLowerCase();
-    return !q || r.ind.name.toLowerCase().includes(q) || r.f.factor.toLowerCase().includes(q);
+    if(datosFactor>=0 && r.fi!==datosFactor) return false;
+    if(q && !(r.ind.name.toLowerCase().includes(q) || r.f.factor.toLowerCase().includes(q))) return false;
+    return true;
   });
-  const th=YEARS.map(y=>'<th>'+y+'</th>').join('');
-  const body=filtered.map(r=>
-    '<tr><td class="dt-f">'+String(r.f.n).padStart(2,'0')+'</td>'+
-    '<td class="dt-name">'+escHtml(r.ind.name)+'</td>'+
-    r.ind.values.map(v=>'<td>'+fmt(v,r.ind.pct)+'</td>').join('')+'</tr>').join('');
+
+  const per=YEARS[0]+'–'+YEARS[YEARS.length-1];
+  const sub = datosFactor>=0
+    ? 'Factor '+DB.factors[datosFactor].n+' · '+DB.factors[datosFactor].indicators.length+' indicadores · '+per
+    : DB.factors.length+' factores · '+total+' indicadores · '+per;
+
+  const yh=YEARS.map((y,i)=>'<th class="dz-yr'+(i===YEARS.length-1?' dz-yr--last':'')+'">'+y+'</th>').join('');
+
+  const body=filtered.map(r=>{
+    const cells=r.ind.values.map((v,i)=>{
+      const last=i===YEARS.length-1, cls='dz-yr'+(last?' dz-yr--last':'');
+      return v===null ? '<td class="'+cls+' dz-na">—</td>' : '<td class="'+cls+'">'+fmt(v,r.ind.pct)+'</td>';
+    }).join('');
+    return '<tr>'+
+      '<td class="dz-fac">'+String(r.f.n).padStart(2,'0')+'</td>'+
+      '<td class="dz-name"><button class="dz-link" data-fi="'+r.fi+'" data-ii="'+r.ii+'" title="Ver en Factores">'+escHtml(r.ind.name)+'</button></td>'+
+      cells+'</tr>';
+  }).join('');
 
   document.getElementById('datosContent').innerHTML=
     '<div class="datos-head">'+
       '<div><div class="eyebrow">Datos</div>'+
       '<h2>Tabla completa de indicadores</h2>'+
-      '<p>'+DB.factors.length+' factores · '+rows.length+' indicadores · '+YEARS[0]+'–'+YEARS[YEARS.length-1]+'</p></div>'+
+      '<p>'+sub+'</p></div>'+
       '<div class="datos-dl">'+
-        '<a class="btn-dl btn-dl--primary" href="data/datos_indicadores.json" download>Descargar JSON</a>'+
-        '<button class="btn-dl" id="dlCsv" type="button">Descargar CSV (Excel)</button>'+
+        '<a class="btn-dl btn-dl--primary" href="data/datos_indicadores.json" download>'+svgIco('dl')+'JSON</a>'+
+        '<button class="btn-dl" id="dlCsv" type="button">'+svgIco('sheet')+'CSV</button>'+
       '</div>'+
     '</div>'+
-    '<div class="search datos-search">'+
-      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>'+
-      '<input id="datosQ" placeholder="Buscar indicador o factor…" value="'+escHtml(datosQuery)+'">'+
+    '<div class="dz-controls">'+
+      '<div class="search dz-search">'+
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>'+
+        '<input id="datosQ" placeholder="Buscar indicador o factor…" value="'+escHtml(datosQuery)+'">'+
+      '</div>'+
+      '<span id="ddDatosLbl" class="sr-only">Filtrar por factor</span>'+
+      '<div class="dd dz-dd" id="ddDatos"></div>'+
     '</div>'+
-    '<div class="datos-table-wrap">'+
-      '<table class="datos-tbl"><thead><tr><th class="dt-f">Fac.</th><th class="dt-name">Indicador</th>'+th+'</tr></thead>'+
+    '<div class="dz-table-wrap">'+
+      '<table class="dz-tbl"><thead><tr>'+
+        '<th class="dz-fac">Fac.</th><th class="dz-name">Indicador</th>'+yh+
+      '</tr></thead>'+
       '<tbody>'+(body||'<tr><td colspan="'+(YEARS.length+2)+'" class="empty">Sin coincidencias.</td></tr>')+'</tbody></table>'+
-    '</div>';
+    '</div>'+
+    '<div class="dz-count">Mostrando '+filtered.length+' de '+total+'</div>';
 
-  const q=document.getElementById('datosQ');
-  q.oninput=e=>{ datosQuery=e.target.value; const pos=e.target.selectionStart; renderDatos();
+  const inp=document.getElementById('datosQ');
+  inp.oninput=e=>{ datosQuery=e.target.value; const pos=e.target.selectionStart; renderDatos();
     const nq=document.getElementById('datosQ'); nq.focus(); nq.setSelectionRange(pos,pos); };
+  // Filtro por factor: dropdown personalizado (índice 0 = Todos los factores)
+  const dd=makeDropdown(document.getElementById('ddDatos'),'ddDatosLbl', sel=>{ datosFactor=sel-1; renderDatos(); });
+  dd.setItems(['Todos los factores'].concat(
+    DB.factors.map(f=>String(f.n).padStart(2,'0')+' · '+f.factor)), datosFactor+1);
   document.getElementById('dlCsv').onclick=downloadCSV;
+  document.querySelectorAll('#datosContent .dz-link').forEach(b=>b.onclick=()=>{
+    curFactor=+b.dataset.fi; curInd=+b.dataset.ii; location.hash='/factores';
+  });
 }
 
 function downloadCSV(){
@@ -533,11 +568,27 @@ function downloadCSV(){
   URL.revokeObjectURL(url);
 }
 
+/* ---------- Colapsar/expandir el sidebar ---------- */
+function setSidebarCollapsed(on){
+  document.querySelector('.layout').classList.toggle('is-collapsed', on);
+  const btn=document.getElementById('sbToggle');
+  btn.setAttribute('aria-label', on?'Expandir menú':'Contraer menú');
+  btn.title = on?'Expandir menú':'Contraer menú';
+  try{ localStorage.setItem('sbCollapsed', on?'1':'0'); }catch(e){}
+}
+
 /* ---------- Eventos globales ---------- */
 function wireEvents(){
   document.querySelectorAll('#pageNav .nav__item').forEach(b =>
     b.onclick = () => { location.hash = '/' + b.dataset.page; });
   window.addEventListener('hashchange', router);
+
+  // Sidebar colapsable (recuerda el estado)
+  let collapsed=false;
+  try{ collapsed = localStorage.getItem('sbCollapsed')==='1'; }catch(e){}
+  setSidebarCollapsed(collapsed);
+  document.getElementById('sbToggle').onclick=()=>
+    setSidebarCollapsed(!document.querySelector('.layout').classList.contains('is-collapsed'));
   document.getElementById('overlay').onclick=e=>{ if(e.target.id==='overlay') closeModal(); };
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeFactorPanel(); } });
 
@@ -560,9 +611,6 @@ async function init(){
     return;
   }
   YEARS = DB.years;
-  document.getElementById('kf').textContent = DB.factors.length;
-  document.getElementById('ki').textContent = DB.factors.reduce((s,f)=>s+f.indicators.length,0);
-  document.getElementById('ky').textContent = YEARS.length;
   wireEvents();
   router();
 }

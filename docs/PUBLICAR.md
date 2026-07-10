@@ -56,16 +56,20 @@ Si te pide autenticación, usa tu usuario de GitHub y un **token personal**
 
 ## 4. Activar GitHub Pages
 
-1. En el repo en GitHub: **Settings → Pages**.
-2. En **Build and deployment → Source**, elige **Deploy from a branch**.
-3. En **Branch**, selecciona `main` y la carpeta **`/ (root)`**. Guarda.
-4. Espera 1–2 minutos. Pages mostrará la URL publicada, del tipo:
+El repositorio incluye un workflow (`.github/workflows/deploy-pages.yml`) que
+despliega el sitio automáticamente. En **Settings → Pages → Source**, elige
+**GitHub Actions**. Con eso, cada push a `main` publica el sitio.
 
-   ```
-   https://dmetrics1.github.io/unimag-cifras/
-   ```
+(Alternativa sin workflow: Source → **Deploy from a branch** → `main` / `/ (root)`.)
 
-Ábrela: debe cargar el tablero con la portada, los factores y los datos.
+Espera 1–2 minutos tras el push. La URL publicada es:
+
+```
+https://dmetrics1.github.io/unimag-cifras/
+```
+
+Puedes ver el avance del despliegue en la pestaña **Actions** del repo. Al
+terminar, ábrela: debe cargar el tablero con la portada, los factores y los datos.
 
 ---
 
