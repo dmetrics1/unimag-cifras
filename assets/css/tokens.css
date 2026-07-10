@@ -90,17 +90,17 @@ h1,h2,h3,h4{font-family:var(--font-display);line-height:1.15;color:var(--brand-p
 .sidebar::-webkit-scrollbar{width:4px}
 .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:999px}
 
-/* Botón de colapsar/expandir */
-.sb-toggle{align-self:flex-end;flex-shrink:0;width:30px;height:30px;margin-bottom:10px;border-radius:9px;
+/* Botón de colapsar/expandir (al lado del título) */
+.sb-toggle{flex-shrink:0;width:32px;height:32px;border-radius:9px;
   border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:rgba(217,233,247,.85);
   display:grid;place-items:center;cursor:pointer;transition:background .15s,color .15s}
 .sb-toggle:hover{background:rgba(255,255,255,.15);color:#fff}
-.sb-toggle svg{width:17px;height:17px;transition:transform .25s ease}
+.sb-toggle svg{width:18px;height:18px}
 
 .sb-brand{display:flex;align-items:center;gap:12px;margin-bottom:24px}
 .sb-logo{width:44px;height:44px;border-radius:12px;background:#fff;display:grid;place-items:center;flex-shrink:0;overflow:hidden;padding:4px}
 .sb-logo img{width:100%;height:100%;object-fit:contain}
-.sb-title{font-family:var(--font-display);font-weight:700;font-size:.94rem;letter-spacing:-.01em;white-space:nowrap}
+.sb-title{flex:1;min-width:0;font-family:var(--font-display);font-weight:700;font-size:.94rem;letter-spacing:-.01em;white-space:nowrap}
 .sb-title span{display:block;font-weight:400;font-size:.72rem;color:rgba(157,184,212,.8);margin-top:2px}
 
 .sb-label{font-size:.66rem;letter-spacing:.13em;text-transform:uppercase;color:rgba(157,184,212,.7);font-weight:600;margin:0 6px 8px;font-family:var(--font-display);white-space:nowrap}
@@ -135,12 +135,10 @@ h1,h2,h3,h4{font-family:var(--font-display);line-height:1.15;color:var(--brand-p
 @media (min-width:921px){
   .layout.is-collapsed .sidebar{width:72px;padding-left:12px;padding-right:12px}
   .layout.is-collapsed .content{margin-left:120px}
-  .layout.is-collapsed .sb-toggle{align-self:center}
-  .layout.is-collapsed .sb-toggle svg{transform:rotate(180deg)}
   .layout.is-collapsed .sb-title,
   .layout.is-collapsed .sb-label,
   .layout.is-collapsed .sb-foot{display:none}
-  .layout.is-collapsed .sb-brand{justify-content:center;margin-bottom:16px}
+  .layout.is-collapsed .sb-brand{flex-direction:column;align-items:center;gap:12px;margin-bottom:18px}
   .layout.is-collapsed .nav__txt{display:none}
   .layout.is-collapsed .nav__item{justify-content:center;padding:11px 0}
 }
