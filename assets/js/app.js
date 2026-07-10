@@ -13,6 +13,7 @@ const ACCENT = '#0183EF';   // serie de datos (azul institucional)
 const GOLD   = '#FF9400';   // punto final / referencia
 
 let DB = null;
+let DETALLE = {};   // detalle oficial por factor (definición + características)
 let YEARS = [];
 let curFactor = 0;   // índice del factor activo
 let curInd = 0;      // índice del indicador activo dentro del factor
@@ -418,26 +419,47 @@ function renderInicio(){
   document.getElementById('ihMetodo').onclick=()=>{ location.hash='/metodologia'; };
 }
 
-/* Panel lateral de detalle del factor */
+/* Modal grande de detalle del factor (definición + características oficiales) */
 function openFactorPanel(i){
   const f=FACTORES_INFO[i];
   const full=DB.factors[i] ? DB.factors[i].factor : f.short;
   const cnt=DB.factors[i] ? DB.factors[i].indicators.length : 0;
+  const det=DETALLE[f.n];
   const panel=document.getElementById('ptPanel');
   panel.style.setProperty('--fc', f.color);
+
+  let carsHTML='';
+  if(det && det.caracteristicas && det.caracteristicas.length){
+    carsHTML='<div class="fdlg__section">Características de alta calidad</div>'+
+      det.caracteristicas.map(c=>
+        '<div class="fdlg__car">'+
+          '<div class="fdlg__car-h"><span class="fdlg__car-n">'+c.n+'</span>'+
+          '<h4>'+escHtml(c.titulo)+'</h4></div>'+
+          (c.descripcion?'<p>'+escHtml(c.descripcion)+'</p>':'')+
+          (c.aspectos&&c.aspectos.length?'<ul>'+c.aspectos.map(a=>'<li>'+escHtml(a)+'</li>').join('')+'</ul>':'')+
+        '</div>').join('');
+  }
+  const intro = (det && det.definicion) ? escHtml(det.definicion) : f.desc;
+
   panel.innerHTML=
-    '<div class="pt-panel__head">'+
-      '<span class="pt-panel__ico">'+svgIco(f.ico)+'</span>'+
-      '<div class="pt-panel__titles"><span class="pt-panel__eyebrow">Factor '+f.n+'</span>'+
+    '<div class="fdlg__head">'+
+      '<span class="fdlg__ico">'+svgIco(f.ico)+'</span>'+
+      '<div class="fdlg__titles"><span class="fdlg__eyebrow">Factor '+f.n+' · Acreditación institucional</span>'+
       '<h2>'+escHtml(f.short)+'</h2></div>'+
-      '<button class="pt-panel__close" aria-label="Cerrar" onclick="closeFactorPanel()">&times;</button>'+
+      '<button class="fdlg__close" aria-label="Cerrar" onclick="closeFactorPanel()">&times;</button>'+
     '</div>'+
-    '<div class="pt-panel__body">'+
-      '<div class="pt-panel__full">'+escHtml(full)+'</div>'+
-      '<p class="pt-panel__desc">'+f.desc+'</p>'+
-      '<button class="pt-panel__cta" data-i="'+i+'">Ver los '+cnt+' indicador'+(cnt===1?'':'es')+' del factor '+svgIco('gochev')+'</button>'+
+    '<div class="fdlg__body">'+
+      '<div class="fdlg__full">'+escHtml(full)+'</div>'+
+      '<p class="fdlg__def">'+intro+'</p>'+
+      carsHTML+
+    '</div>'+
+    '<div class="fdlg__foot">'+
+      '<span class="fdlg__src">Fuente: CNA · Lineamientos de acreditación institucional en alta calidad</span>'+
+      '<button class="fdlg__cta" data-i="'+i+'">'+(cnt===1?'Ver el indicador del factor':'Ver los '+cnt+' indicadores del factor')+' '+svgIco('gochev')+'</button>'+
     '</div>';
-  panel.querySelector('.pt-panel__cta').onclick=()=>goToFactor(i);
+  panel.querySelector('.fdlg__cta').onclick=()=>goToFactor(i);
+  panel.scrollTop=0;
+  const body=panel.querySelector('.fdlg__body'); if(body) body.scrollTop=0;
   document.getElementById('ptOverlay').classList.add('show');
   panel.classList.add('show');
   panel.setAttribute('aria-hidden','false');
@@ -474,7 +496,7 @@ function renderMetodologia(){
       '<div class="pt-grid pt-grid--flow">'+cards+'</div>'+
     '</div>'+
     '<div class="pt-overlay" id="ptOverlay"></div>'+
-    '<aside class="pt-panel" id="ptPanel" role="dialog" aria-modal="true" aria-hidden="true"></aside>';
+    '<div class="fdlg" id="ptPanel" role="dialog" aria-modal="true" aria-hidden="true"></div>';
 
   document.querySelectorAll('#metodologiaContent .pt-card').forEach(c=>c.onclick=()=>openFactorPanel(+c.dataset.i));
   document.getElementById('ptOverlay').onclick=closeFactorPanel;
@@ -634,6 +656,10 @@ async function init(){
   }
   YEARS = DB.years;
   mergeNacional();
+  try{
+    const rd = await fetch('data/factores_detalle.json', {cache:'no-cache'});
+    if(rd.ok){ (await rd.json()).factores.forEach(f=>DETALLE[f.n]=f); }
+  }catch(e){ /* el detalle es opcional; el modal cae a la descripción breve */ }
   wireEvents();
   router();
 }
