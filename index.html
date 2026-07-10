@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unimagdalena en Cifras · Indicadores por Factor 2020–2025</title>
+<meta name="description" content="Tablero interactivo de indicadores institucionales de la Universidad del Magdalena por factor de acreditación, serie 2020–2025.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="assets/img/escudo-unimagdalena.png">
+<link rel="stylesheet" href="assets/css/tokens.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo"><img src="assets/img/escudo-unimagdalena.png" alt="Escudo Universidad del Magdalena"></div>
+      <div class="sb-title">UNIMAGDALENA<span>Indicadores por Factor</span></div>
+    </div>
+    <div class="sb-kpis">
+      <div class="sb-kpi"><b id="kf">—</b><span>Factores</span></div>
+      <div class="sb-kpi"><b id="ki">—</b><span>Indic.</span></div>
+      <div class="sb-kpi"><b id="ky">—</b><span>Años</span></div>
+    </div>
+
+    <!-- Menú principal (4 páginas) -->
+    <div class="sb-label">Menú</div>
+    <nav class="nav nav--pages" id="pageNav">
+      <button class="nav__item" data-page="inicio">
+        <span class="nav__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span>
+        <span class="nav__txt">Inicio</span>
+      </button>
+      <button class="nav__item" data-page="factores">
+        <span class="nav__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8.5 12 14l10-5.5L12 3Z"/><path d="m2 15.5 10 5.5 10-5.5"/></svg></span>
+        <span class="nav__txt">Factores</span>
+      </button>
+      <button class="nav__item" data-page="datos">
+        <span class="nav__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/><path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg></span>
+        <span class="nav__txt">Datos</span>
+      </button>
+      <button class="nav__item" data-page="metodologia">
+        <span class="nav__ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H20v15.5H5.5A1.5 1.5 0 0 0 4 20V4.5Z"/><path d="M4 20a1.5 1.5 0 0 0 1.5 1.5H20"/></svg></span>
+        <span class="nav__txt">Metodología</span>
+      </button>
+    </nav>
+
+    <div class="sb-foot"><b>Unimagdalena en Cifras</b><br>Serie 2020–2025 · Oficina de Planeación</div>
+  </aside>
+
+  <div class="content">
+
+    <!-- ===================== INICIO ===================== -->
+    <section class="page" id="page-inicio">
+      <div id="inicioContent"></div>
+    </section>
+
+    <!-- ===================== FACTORES ===================== -->
+    <section class="page page-fill" id="page-factores">
+      <div class="fx-head">
+        <div class="fx-band">
+          <div class="eyebrow" id="fEyebrow">Factor 1</div>
+          <h2 id="fTitle"></h2>
+          <p id="fSub"></p>
+        </div>
+        <div class="fx-filters">
+          <div class="fx-field">
+            <label id="ddFactorLbl">Factor</label>
+            <div class="dd" id="ddFactor"></div>
+          </div>
+          <div class="fx-field fx-field--grow">
+            <label id="ddIndLbl">Indicador</label>
+            <div class="dd dd--grow" id="ddInd"></div>
+          </div>
+        </div>
+      </div>
+      <div id="content"></div>
+    </section>
+
+    <!-- ===================== METODOLOGÍA ===================== -->
+    <section class="page" id="page-metodologia">
+      <div id="metodologiaContent"></div>
+    </section>
+
+    <!-- ===================== DATOS ===================== -->
+    <section class="page" id="page-datos">
+      <div id="datosContent"></div>
+    </section>
+
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+
+<script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Entornos y temporales
+__pycache__/
+*.pyc
+venv/
+.venv/
+.DS_Store
+*.bak
+
+# Fuentes de trabajo (el sitio NO las usa; se mantienen locales, ver README)
+data/Matriz_indicadores_por_factor.xlsx
+*.pdf
+listado_indicadores_tipo_grafico.md
+
+# Configuración local del editor / vista previa
+.claude/

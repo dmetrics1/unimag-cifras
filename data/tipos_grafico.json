@@ -1,0 +1,651 @@
+{
+  "origen": "Gráficos embebidos en 00_Informe_ReAcreditacion_UM_V.12.docx, mapeados por coincidencia de valores",
+  "mapeados": 87,
+  "total": 92,
+  "indicadores": [
+    {
+      "factor": 1,
+      "name": "Nivel de satisfacción con la prestación del servicio",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart1.xml"
+    },
+    {
+      "factor": 2,
+      "name": "Porcentaje de cumplimiento del Plan de Acción Institucional",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart3.xml"
+    },
+    {
+      "factor": 2,
+      "name": "Porcentaje de cumplimiento del Acuerdo de Gestión Rectoral",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart2.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Presupuesto total de ingresos de la Universidad (millones de pesos)",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart4.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Presupuesto de inversión ejecutado (millones de pesos)",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart5.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Porcentaje de participación de los recursos propios en el presupuesto de ingresos",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart6.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Porcentaje de participación de las transferencias corrientes art. 86 de la ley 30 en el presupuesto de ingresos",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart7.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Número de usuarios registrados en la plataforma Bloque 10",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart8.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Energía generada en el campus a través de fuentes renovables",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart9.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Número de bases de datos en suscripción disponibles en la Biblioteca",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart10.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Número de títulos físicos y electrónicos disponibles en la Biblioteca",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart11.xml"
+    },
+    {
+      "factor": 3,
+      "name": "Metros cuadrados construidos",
+      "chart": "linea",
+      "dual": false,
+      "fuente": null
+    },
+    {
+      "factor": 3,
+      "name": "Porcentaje del campus con suplencia de energía",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart13.xml"
+    },
+    {
+      "factor": 4,
+      "name": "Número de programas académicos acreditados a nivel nacional",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart14.xml"
+    },
+    {
+      "factor": 4,
+      "name": "Número de acreditaciones internacionales para programas académicos",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart15.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Porcentaje de programas académicos en modalidades NO presenciales",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart16.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Porcentaje de estudiantes que cursan programas en modalidades NO presenciales",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart17.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Número de programas académicos de pregrado",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart18.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Número de programas académicos de posgrado",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart19.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Número de programas técnicos laborales",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart20.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Promedio puntaje global Saber Pro",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart21.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Promedio puntaje global Saber Pro (Nacional)",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart21.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Porcentaje de programas académicos por encima de la media nacional de su NBC en Saber Pro",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart22.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Porcentaje de estudiantes que obtienen nivel A2 o superior en la prueba de inglés Saber Pro",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart24.xml"
+    },
+    {
+      "factor": 5,
+      "name": "Porcentaje de estudiantes por encima de la media nacional de su NBC en Saber Pro",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart23.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Presupuesto ejecutado del fondo de investigación Fonciencias (millones de pesos)",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart25.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Total recursos externos gestionados para proyectos de investigación (millones de pesos)",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart26.xml"
+    },
+    {
+      "factor": 6,
+      "name": "N° proyectos financiados con recursos externos",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart28.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Número grupos de investigación categorizados por el Sistema Nacional de Ciencia y Tecnología",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart29.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Número de investigadores con filiación a la Universidad, categorizados por el Sistema Nacional de Ciencia y Tecnología",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart30.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Porcentaje de grupos categorizados en A1 y A  por el Sistema Nacional de Ciencia y Tecnología",
+      "chart": "linea",
+      "dual": false,
+      "fuente": null
+    },
+    {
+      "factor": 6,
+      "name": "Número de documentos indexados en Scopus o Web of Science",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart32.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Número de artículos publicados en revistas con cuartiles Q1 y Q2 en los rankings SRJ y JSR",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart33.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Número de publicaciones realizadas por la Editorial Unimagdalena",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart34.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Índice H institucional (SCOPUS)",
+      "chart": "linea",
+      "dual": false,
+      "fuente": null
+    },
+    {
+      "factor": 6,
+      "name": "Artículos por docente (QS World University Rankings: Latin America & The Caribbean)",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart36.xml"
+    },
+    {
+      "factor": 6,
+      "name": "Número de centros e institutos",
+      "chart": "linea",
+      "dual": false,
+      "fuente": null
+    },
+    {
+      "factor": 6,
+      "name": "Número de citaciones por artículo (QS World University Rankings: Latin America & The Caribbean)",
+      "chart": "linea",
+      "dual": false,
+      "fuente": null
+    },
+    {
+      "factor": 7,
+      "name": "Total recursos externos gestionados para proyectos de extensión (millones de pesos)",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart38.xml"
+    },
+    {
+      "factor": 7,
+      "name": "Número de proyectos gestionados para actividades de extensión y proyección social",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart39.xml"
+    },
+    {
+      "factor": 7,
+      "name": "Número de beneficiarios de proyectos de extensión",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart40.xml"
+    },
+    {
+      "factor": 7,
+      "name": "Número de municipios impactados por la ejecución de proyectos de extensión",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart41.xml"
+    },
+    {
+      "factor": 7,
+      "name": "Número de empleos generados en el marco de los proyectos de extensión",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart42.xml"
+    },
+    {
+      "factor": 7,
+      "name": "Aporte relativo al indicador cobertura formación universitaria departamental (EDS-1-1) del Índice Departamental de Competitividad ",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart43.xml"
+    },
+    {
+      "factor": 7,
+      "name": "Aporte relativo al indicador Graduados de posgrado por cada 100 mil habitantes (EDS-1-2) del Índice Departamental de Competitividad ",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart44.xml"
+    },
+    {
+      "factor": 7,
+      "name": "Número de sedes digitales creadas",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart45.xml"
+    },
+    {
+      "factor": 8,
+      "name": "Convenios internacionales activos",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart46.xml"
+    },
+    {
+      "factor": 8,
+      "name": "Movilidad internacional saliente de estudiantes ",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart47.xml"
+    },
+    {
+      "factor": 8,
+      "name": "Movilidad internacional saliente de docentes",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart48.xml"
+    },
+    {
+      "factor": 8,
+      "name": "Movilidad internacional entrante de estudiantes",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart49.xml"
+    },
+    {
+      "factor": 8,
+      "name": "Movilidad internacional entrante de docentes",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart50.xml"
+    },
+    {
+      "factor": 8,
+      "name": "Número de programas ofertados en doble titulación o cotitulación internacional",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart51.xml"
+    },
+    {
+      "factor": 8,
+      "name": "Número de productos académicos desarrollados en coautoría internacional",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart52.xml"
+    },
+    {
+      "factor": 9,
+      "name": "Número de beneficiarios del programa de almuerzos gratuitos",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart53.xml"
+    },
+    {
+      "factor": 9,
+      "name": "Número de beneficiarios del programa de refrigerios gratuitos",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart54.xml"
+    },
+    {
+      "factor": 9,
+      "name": "Número de participantes en actividades deportivas",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart55.xml"
+    },
+    {
+      "factor": 9,
+      "name": "Número de participantes en actividades culturales",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart56.xml"
+    },
+    {
+      "factor": 9,
+      "name": "Número de participantes en actividades de salud",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart57.xml"
+    },
+    {
+      "factor": 9,
+      "name": "Número de participantes en actividades de desarrollo humano",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart58.xml"
+    },
+    {
+      "factor": 10,
+      "name": "Número de docentes tiempo completo equivalente",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart59.xml"
+    },
+    {
+      "factor": 10,
+      "name": "Número de docentes en tiempo completo equivalente incluyendo cátedra",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart60.xml"
+    },
+    {
+      "factor": 10,
+      "name": "Porcentaje de docentes tiempo completo con doctorado",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart61.xml"
+    },
+    {
+      "factor": 10,
+      "name": "Relación número de estudiantes por docente en tiempo completo equivalente",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart62.xml"
+    },
+    {
+      "factor": 10,
+      "name": "Número de docentes activos en el programa de formación avanzada",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart63.xml"
+    },
+    {
+      "factor": 10,
+      "name": "Porcentaje de docentes de planta en la categoría titular",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart64.xml"
+    },
+    {
+      "factor": 10,
+      "name": "Porcentaje de horas de los Planes de Compromiso Profesoral de los docentes de planta dedicadas a investigación",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart65.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número de estudiantes que ingresan a primer curso en pregrado",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart66.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Tasa de absorción de estudiantes en pregrado",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart67.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Tasa de selectividad de estudiantes en pregrado",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart68.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Estudiantes matriculados pregrado",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart69.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Estudiantes matriculados posgrado",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart70.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Porcentaje de estudiantes que acceden por cupos especiales a pregrado presencial",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart71.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número de estudiantes que ingresaron al programa Talento Magdalena",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart72.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número de beneficiarios del programa de validación por competencias",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart73.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número de estudiantes beneficiarios de la beca de monitoría académica",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart74.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número de estudiantes beneficiarios de la beca de ayudantías administrativas y académicas en extensión",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart75.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número de estudiantes beneficiarios de beca de inclusión y permanencia",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart76.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número de estudiantes beneficiarios de beca de representación estudiantil",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart77.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número de estudiantes beneficiarios de beca de práctica profesional",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart78.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Número promedio de semestres cursados para la graduación pregrado presencial",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart79.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Porcentaje de graduados que lo hacen dentro del tiempo de duración del programa",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart80.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Tasa de deserción en nivel universitario",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart81.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Tasa de deserción en nivel universitario (Nacional)",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart81.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Tasa de graduación acumulada por cohorte en nivel universitario",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart82.xml"
+    },
+    {
+      "factor": 11,
+      "name": "Tasa de graduación acumulada por cohorte en nivel universitario (Nacional)",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart82.xml"
+    },
+    {
+      "factor": 12,
+      "name": "Número de graduados histórico acumulado",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart83.xml"
+    },
+    {
+      "factor": 12,
+      "name": "Número de graduados vinculados a proyectos de investigación",
+      "chart": "barras",
+      "dual": false,
+      "fuente": "chart84.xml"
+    },
+    {
+      "factor": 12,
+      "name": "Número de graduados vinculados a proyectos de extensión",
+      "chart": "linea",
+      "dual": false,
+      "fuente": "chart85.xml"
+    },
+    {
+      "factor": 12,
+      "name": "Tasa de empleabilidad en pregrado (Nacional)",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart86.xml"
+    },
+    {
+      "factor": 12,
+      "name": "Tasa de empleabilidad en pregrado",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart86.xml"
+    },
+    {
+      "factor": 12,
+      "name": "Tasa de empleabilidad en posgrado",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart87.xml"
+    },
+    {
+      "factor": 12,
+      "name": "Tasa de empleabilidad en posgrado (Nacional)",
+      "chart": "linea",
+      "dual": true,
+      "fuente": "chart87.xml"
+    }
+  ]
+}
