@@ -597,6 +597,28 @@ function wireEvents(){
   ddInd = makeDropdown(document.getElementById('ddInd'), 'ddIndLbl', i=>{ curInd=i; renderContent(); });
 }
 
+/* ---------- Une pares "X" + "X (Nacional)" en una comparación ----------
+   En la matriz, los indicadores comparados con el nivel nacional vienen como
+   dos filas: "X" (Unimagdalena) y "X (Nacional)". Aquí se enlazan: el indicador
+   base recibe la serie nacional en values_ref y se retira la fila "(Nacional)"
+   suelta (pasa a ser la línea de comparación gris dentro del gráfico). */
+function mergeNacional(){
+  DB.factors.forEach(f=>{
+    const byName={};
+    f.indicators.forEach(ind=>{ byName[ind.name.trim()]=ind; });
+    const keep=[];
+    f.indicators.forEach(ind=>{
+      const m=ind.name.match(/^(.+?)\s*\(Nacional\)\s*$/i);
+      if(m){
+        const base=byName[m[1].trim()];
+        if(base){ base.values_ref=ind.values; base.dual=true; base.chart='linea'; return; }
+      }
+      keep.push(ind);
+    });
+    f.indicators=keep;
+  });
+}
+
 /* ---------- Arranque ---------- */
 async function init(){
   try{
@@ -611,6 +633,7 @@ async function init(){
     return;
   }
   YEARS = DB.years;
+  mergeNacional();
   wireEvents();
   router();
 }
