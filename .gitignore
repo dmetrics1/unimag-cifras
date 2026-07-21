@@ -5,6 +5,7 @@ venv/
 .venv/
 .DS_Store
 *.bak
+*.bak*
 
 # Fuentes de trabajo (el sitio NO las usa; se mantienen locales, ver README)
 data/Matriz_indicadores_por_factor.xlsx
