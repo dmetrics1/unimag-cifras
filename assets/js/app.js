@@ -3,14 +3,15 @@
    app.js — Tablero de indicadores por factor
    ------------------------------------------------------------
    Carga data/datos_indicadores.json y renderiza:
-   - Navegación por factores (sidebar)
+   - Navegación por factores (sidebar & drawer móvil)
    - Tarjetas de indicador con sparkline
-   - Vista de tabla
+   - Vista de tabla responsiva
    - Modal de detalle con gráfico grande + serie 2020–2025
    ============================================================ */
 
 const ACCENT = '#0183EF';   // serie de datos (azul institucional)
 const GOLD   = '#FF9400';   // punto final / referencia
+const NACIONAL = '#8295AB'; // serie de referencia "Nacional"
 
 let DB = null;
 let DETALLE = {};   // detalle oficial por factor (definición + características)
@@ -29,16 +30,50 @@ function showPage(page){
     s.classList.toggle('is-active', s.id === 'page-' + page));
   document.querySelectorAll('#pageNav .nav__item').forEach(b =>
     b.classList.toggle('is-active', b.dataset.page === page));
+  
+  // Cierre automático del menú móvil al navegar
+  closeMobileMenu();
+
   if(page === 'factores') renderFactores();
   else if(page === 'inicio') renderInicio();
   else if(page === 'datos') renderDatos();
   else if(page === 'metodologia') renderMetodologia();
-  document.querySelector('.content').scrollTo({top:0});
+  
+  const contentEl = document.querySelector('.content');
+  if(contentEl) contentEl.scrollTo({top:0});
+  window.scrollTo({top:0});
 }
 
 function router(){
   const h = (location.hash || '').replace(/^#\/?/, '');
   showPage(h || 'inicio');
+}
+
+/* ---------- Menú Móvil (Drawer) ---------- */
+function openMobileMenu(){
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sbOverlay');
+  const btn = document.getElementById('mbMenuBtn');
+  if(sb) sb.classList.add('is-open');
+  if(ov) ov.classList.add('is-active');
+  if(btn) btn.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('no-scroll');
+}
+
+function closeMobileMenu(){
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sbOverlay');
+  const btn = document.getElementById('mbMenuBtn');
+  if(sb) sb.classList.remove('is-open');
+  if(ov) ov.classList.remove('is-active');
+  if(btn) btn.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('no-scroll');
+}
+
+function toggleMobileMenu(){
+  const sb = document.getElementById('sidebar');
+  if(sb && sb.classList.contains('is-open')) closeMobileMenu();
+  else openMobileMenu();
 }
 
 /* ---------- Formato ---------- */
@@ -62,13 +97,13 @@ function trend(vals){
 /* ---------- Sparkline (mini gráfico de tarjeta) ---------- */
 function sparkline(vals, w=278, h=46){
   const pts = vals.map((v,i)=>({v,i})).filter(p=>p.v!==null);
-  if(pts.length<2) return '<svg width="'+w+'" height="'+h+'"></svg>';
+  if(pts.length<2) return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid meet"></svg>';
   const xs=vals.length-1, mn=Math.min(...pts.map(p=>p.v)), mx=Math.max(...pts.map(p=>p.v)), rng=mx-mn||1;
   const X=i=>8+(i/xs)*(w-16), Y=v=>h-6-((v-mn)/rng)*(h-14);
   let d='';pts.forEach((p,k)=>{d+=(k?'L':'M')+X(p.i).toFixed(1)+' '+Y(p.v).toFixed(1)+' ';});
   const area=d+'L'+X(pts[pts.length-1].i).toFixed(1)+' '+h+' L'+X(pts[0].i).toFixed(1)+' '+h+' Z';
   const last=pts[pts.length-1];
-  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'">'+
+  return '<svg width="100%" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid meet">'+
     '<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+ACCENT+'" stop-opacity="0.18"/><stop offset="1" stop-color="'+ACCENT+'" stop-opacity="0"/></linearGradient></defs>'+
     '<path d="'+area+'" fill="url(#sg)"/>'+
     '<path d="'+d+'" fill="none" stroke="'+ACCENT+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
@@ -93,7 +128,7 @@ function bigChart(vals, pct){
   let xl='';YEARS.forEach((yr,i)=>{xl+='<text x="'+X(i).toFixed(1)+'" y="'+(h-13)+'" text-anchor="middle" font-size="11.5" fill="#51637A" font-family="Outfit" font-weight="600">'+yr+'</text>';});
   let dots='';pts.forEach(p=>{dots+='<circle cx="'+X(p.i).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="4.2" fill="#fff" stroke="'+ACCENT+'" stroke-width="2.5"/>';
     dots+='<text x="'+X(p.i).toFixed(1)+'" y="'+(Y(p.v)-12).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#14243A" font-family="Outfit">'+fmt(p.v,pct)+'</text>';});
-  return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" style="max-width:100%">'+
+  return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid meet" style="max-width:100%">'+
     '<defs><linearGradient id="ba" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+ACCENT+'" stop-opacity="0.15"/><stop offset="1" stop-color="'+ACCENT+'" stop-opacity="0"/></linearGradient></defs>'+
     grid+'<path d="'+area+'" fill="url(#ba)"/>'+
     '<path d="'+line+'" fill="none" stroke="'+ACCENT+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'+dots+xl+'</svg>';
@@ -103,9 +138,7 @@ function bigChart(vals, pct){
 function currentFactor(){ return DB.factors[curFactor]; }
 function currentInd(){ return currentFactor().indicators[curInd]; }
 
-/* ---------- Dropdown personalizado (barra de filtros) ----------
-   Botón con texto truncado + tooltip del nombre completo, y un menú
-   que envuelve los nombres largos (sin salirse de la pantalla). */
+/* ---------- Dropdown personalizado (barra de filtros) ---------- */
 function escHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 let ddFactor = null, ddInd = null;
@@ -128,20 +161,27 @@ function makeDropdown(root, labelId, onSelect){
     menu.innerHTML=items.map((t,i)=>
       '<div class="dd__opt'+(i===selected?' is-sel':'')+'" role="option" data-i="'+i+'" '+
       'title="'+escHtml(t)+'" aria-selected="'+(i===selected)+'">'+escHtml(t)+'</div>').join('');
-    opts().forEach(o=>o.onclick=()=>{ choose(+o.dataset.i); });
+    opts().forEach(o=>{
+      o.onclick=()=>{ choose(+o.dataset.i); };
+    });
   }
   function markActive(){ opts().forEach((o,i)=>o.classList.toggle('is-active',i===activeIdx)); }
   function open(){
     if(!items.length) return;
     menu.hidden=false; btn.setAttribute('aria-expanded','true');
-    // Alinea a la izquierda; si el menú se saldría por la derecha, lo voltea
     menu.style.left='0'; menu.style.right='auto';
     if(menu.getBoundingClientRect().right > window.innerWidth-8){ menu.style.left='auto'; menu.style.right='0'; }
     activeIdx=selected; markActive();
     const el=opts()[activeIdx]; if(el) el.scrollIntoView({block:'nearest'});
     document.addEventListener('mousedown',onDoc,true);
+    document.addEventListener('touchstart',onDoc,true);
   }
-  function close(){ menu.hidden=true; btn.setAttribute('aria-expanded','false'); document.removeEventListener('mousedown',onDoc,true); }
+  function close(){
+    menu.hidden=true;
+    btn.setAttribute('aria-expanded','false');
+    document.removeEventListener('mousedown',onDoc,true);
+    document.removeEventListener('touchstart',onDoc,true);
+  }
   function onDoc(e){ if(!root.contains(e.target)) close(); }
   function choose(i){ selected=i; setValue(); renderMenu(); close(); btn.focus(); onSelect(i); }
 
@@ -176,7 +216,6 @@ function renderFactores(){
   // Dropdowns de la barra de filtros
   ddFactor.setItems(DB.factors.map(x=>String(x.n).padStart(2,'0')+' · '+x.factor), curFactor);
   ddInd.setItems(f.indicators.map(x=>x.name), curInd);
-  // Contenido (el gráfico + KPIs llegan en el Paso 3)
   renderContent();
 }
 
@@ -221,15 +260,14 @@ function renderContent(){
   mountChart(document.getElementById('chartHost'), ind, years);
 }
 
-/* ---------- Gráfico responsivo (elige tipo según indicator.chart) ---------- */
-const NACIONAL = '#8295AB';   // serie de referencia "Nacional" en indicadores dual
+/* ---------- Gráfico responsivo con ResizeObserver ---------- */
 let chartRO = null;
 
 function mountChart(host, ind, years){
   const draw=()=>{
     const w=host.clientWidth, h=host.clientHeight;
-    if(w<10||h<10) return;               // oculto o sin medir: conserva lo dibujado
-    const tipo = ind.chart==='barras' ? 'barras' : 'linea';   // por defecto: línea
+    if(w<10||h<10) return;
+    const tipo = ind.chart==='barras' ? 'barras' : 'linea';
     host.innerHTML = tipo==='barras'
       ? buildBarSVG(ind, years, w, h)
       : buildLineSVG(ind, years, w, h);
@@ -240,24 +278,25 @@ function mountChart(host, ind, years){
   chartRO.observe(host);
 }
 
-/* Ejes + grilla horizontal compartidos (devuelve helpers y el SVG de la grilla) */
+/* Ejes + grilla horizontal compartidos */
 function chartFrame(w, h, mn, mx, pct, pad){
   const rng=mx-mn||1;
   const Y=v=>h-pad.b-((v-mn)/rng)*(h-pad.t-pad.b);
   let grid='';const N=4;
+  const fontSize = w < 420 ? '10' : '11';
   for(let g=0;g<=N;g++){const gv=mn+(rng*g/N), gy=Y(gv);
     grid+='<line x1="'+pad.l+'" y1="'+gy.toFixed(1)+'" x2="'+(w-pad.r)+'" y2="'+gy.toFixed(1)+'" stroke="#DCE5EE"/>';
-    grid+='<text x="'+(pad.l-9)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#8295AB" font-family="Inter">'+fmt(gv,pct)+'</text>';}
+    grid+='<text x="'+(pad.l-7)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="'+fontSize+'" fill="#8295AB" font-family="Inter">'+fmt(gv,pct)+'</text>';}
   return {Y, grid};
 }
 
-/* ---- Gráfico de LÍNEA (con área; soporta 2ª serie Nacional si dual) ---- */
+/* ---- Gráfico de LÍNEA ---- */
 function buildLineSVG(ind, years, w, h){
   const vals=ind.values, pct=ind.pct;
-  const pad={l:58,r:22,t:24,b:32};
+  const pad={l:w<420?46:58, r:w<420?14:22, t:24, b:32};
   const pts=vals.map((v,i)=>({v,i})).filter(p=>p.v!==null);
   if(pts.length<2) return '<div class="empty">Datos insuficientes para graficar</div>';
-  // Serie de referencia Nacional (solo si dual y ya viene poblada). TODO: values_ref
+
   const ref = (ind.dual && Array.isArray(ind.values_ref)) ? ind.values_ref : null;
   let allv=pts.map(p=>p.v);
   if(ref) allv=allv.concat(ref.filter(v=>v!==null));
@@ -270,12 +309,15 @@ function buildLineSVG(ind, years, w, h){
 
   let line='';pts.forEach((p,k)=>{line+=(k?'L':'M')+X(p.i).toFixed(1)+' '+Y(p.v).toFixed(1)+' ';});
   const area=line+'L'+X(pts[pts.length-1].i).toFixed(1)+' '+(h-pad.b)+' L'+X(pts[0].i).toFixed(1)+' '+(h-pad.b)+' Z';
-  let dots='';pts.forEach(p=>{dots+='<circle cx="'+X(p.i).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="4.2" fill="#fff" stroke="'+ACCENT+'" stroke-width="2.5"/>';
-    dots+='<text x="'+X(p.i).toFixed(1)+'" y="'+(Y(p.v)-12).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#14243A" font-family="Outfit">'+fmt(p.v,pct)+'</text>';});
+  
+  const labelFontSz = w < 420 ? '9.5' : '11';
+  let dots='';pts.forEach(p=>{
+    dots+='<circle cx="'+X(p.i).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="4" fill="#fff" stroke="'+ACCENT+'" stroke-width="2.5"/>';
+    dots+='<text x="'+X(p.i).toFixed(1)+'" y="'+(Y(p.v)-10).toFixed(1)+'" text-anchor="middle" font-size="'+labelFontSz+'" font-weight="700" fill="#14243A" font-family="Outfit">'+fmt(p.v,pct)+'</text>';
+  });
   const last=pts[pts.length-1];
-  const endDot='<circle cx="'+X(last.i).toFixed(1)+'" cy="'+Y(last.v).toFixed(1)+'" r="5" fill="'+GOLD+'"/>';
+  const endDot='<circle cx="'+X(last.i).toFixed(1)+'" cy="'+Y(last.v).toFixed(1)+'" r="4.8" fill="'+GOLD+'"/>';
 
-  // 2ª serie: Nacional (gris, sin área). Si aún no hay datos, no se dibuja.
   let refLine='';
   if(ref){
     const rp=ref.map((v,i)=>({v,i})).filter(p=>p.v!==null);
@@ -285,24 +327,26 @@ function buildLineSVG(ind, years, w, h){
         rp.map(p=>'<circle cx="'+X(p.i).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="3.4" fill="#fff" stroke="'+NACIONAL+'" stroke-width="2"/>').join('');
     }
   }
-  /* TODO(dual): cuando el JSON incluya values_ref (serie Nacional) para los 10
-     indicadores comparados, esta 2ª serie se dibuja automáticamente arriba. */
 
-  let xl='';years.forEach((yr,i)=>{xl+='<text x="'+X(i).toFixed(1)+'" y="'+(h-12)+'" text-anchor="middle" font-size="11.5" fill="#51637A" font-family="Outfit" font-weight="600">'+yr+'</text>';});
-  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+
+  const yrFontSz = w < 420 ? '10' : '11.5';
+  let xl='';years.forEach((yr,i)=>{
+    xl+='<text x="'+X(i).toFixed(1)+'" y="'+(h-10)+'" text-anchor="middle" font-size="'+yrFontSz+'" fill="#51637A" font-family="Outfit" font-weight="600">'+yr+'</text>';
+  });
+
+  return '<svg width="100%" height="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+
     '<defs><linearGradient id="ba" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+ACCENT+'" stop-opacity="0.15"/><stop offset="1" stop-color="'+ACCENT+'" stop-opacity="0"/></linearGradient></defs>'+
     grid+'<path d="'+area+'" fill="url(#ba)"/>'+refLine+
     '<path d="'+line+'" fill="none" stroke="'+ACCENT+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'+dots+endDot+xl+'</svg>';
 }
 
-/* ---- Gráfico de BARRAS (columnas por año, base en 0) ---- */
+/* ---- Gráfico de BARRAS ---- */
 function buildBarSVG(ind, years, w, h){
   const vals=ind.values, pct=ind.pct;
-  const pad={l:58,r:22,t:26,b:32};
+  const pad={l:w<420?46:58, r:w<420?14:22, t:26, b:32};
   const pts=vals.map((v,i)=>({v,i})).filter(p=>p.v!==null);
   if(!pts.length) return '<div class="empty">Sin datos para graficar</div>';
   const mx0=Math.max(...pts.map(p=>p.v), 0);
-  const mn=Math.min(0, ...pts.map(p=>p.v));         // base en 0 (o negativo si lo hubiera)
+  const mn=Math.min(0, ...pts.map(p=>p.v));
   const mx=mx0*1.12 || 1;
   const n=vals.length;
   const plotW=w-pad.l-pad.r, slot=plotW/n;
@@ -312,24 +356,31 @@ function buildBarSVG(ind, years, w, h){
   const base=Y(mn);
   const lastI=pts[pts.length-1].i;
 
+  const labelFontSz = w < 420 ? '9.5' : '11';
   let bars='';pts.forEach(p=>{
     const x=cx(p.i)-barW/2, y=Y(p.v), bh=Math.max(0, base-y);
-    const col=p.i===lastI ? '#004A87' : ACCENT;    // resalta la última barra
+    const col=p.i===lastI ? '#004A87' : ACCENT;
     bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="3" fill="'+col+'"/>';
-    bars+='<text x="'+cx(p.i).toFixed(1)+'" y="'+(y-7).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#14243A" font-family="Outfit">'+fmt(p.v,pct)+'</text>';
+    bars+='<text x="'+cx(p.i).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" text-anchor="middle" font-size="'+labelFontSz+'" font-weight="700" fill="#14243A" font-family="Outfit">'+fmt(p.v,pct)+'</text>';
   });
-  /* TODO(dual): si ind.dual con values_ref, dibujar columnas agrupadas
-     (Unimagdalena + Nacional) en cada año. Pendiente de datos. */
-  let xl='';years.forEach((yr,i)=>{xl+='<text x="'+cx(i).toFixed(1)+'" y="'+(h-12)+'" text-anchor="middle" font-size="11.5" fill="#51637A" font-family="Outfit" font-weight="600">'+yr+'</text>';});
-  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+grid+bars+xl+'</svg>';
+
+  const yrFontSz = w < 420 ? '10' : '11.5';
+  let xl='';years.forEach((yr,i)=>{
+    xl+='<text x="'+cx(i).toFixed(1)+'" y="'+(h-10)+'" text-anchor="middle" font-size="'+yrFontSz+'" fill="#51637A" font-family="Outfit" font-weight="600">'+yr+'</text>';
+  });
+
+  return '<svg width="100%" height="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+grid+bars+xl+'</svg>';
 }
 
-function closeModal(){ document.getElementById('overlay').classList.remove('show'); }
+function closeModal(){
+  const ov = document.getElementById('overlay');
+  if(ov) ov.classList.remove('show');
+  document.body.classList.remove('no-scroll');
+}
 
-/* ---------- Página INICIO (portada) ---------- */
+/* ---------- Página INICIO ---------- */
 function goToFactor(i){ curFactor=i; curInd=0; location.hash='/factores'; }
 
-// Íconos (trazos internos de un SVG 24x24, stroke)
 const ICO={
   identidad:'<path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M12 8v4M9.5 10.5 12 12l2.5-1.5"/>',
   gobierno:'<path d="M3 21h18M5 21V10M19 21V10M4 10l8-6 8 6M9 21v-6h6v6"/>',
@@ -419,13 +470,14 @@ function renderInicio(){
   document.getElementById('ihMetodo').onclick=()=>{ location.hash='/metodologia'; };
 }
 
-/* Modal grande de detalle del factor (definición + características oficiales) */
+/* Modal grande de detalle del factor */
 function openFactorPanel(i){
   const f=FACTORES_INFO[i];
   const full=DB.factors[i] ? DB.factors[i].factor : f.short;
   const cnt=DB.factors[i] ? DB.factors[i].indicators.length : 0;
   const det=DETALLE[f.n];
   const panel=document.getElementById('ptPanel');
+  if(!panel) return;
   panel.style.setProperty('--fc', f.color);
 
   let carsHTML='';
@@ -460,14 +512,19 @@ function openFactorPanel(i){
   panel.querySelector('.fdlg__cta').onclick=()=>goToFactor(i);
   panel.scrollTop=0;
   const body=panel.querySelector('.fdlg__body'); if(body) body.scrollTop=0;
-  document.getElementById('ptOverlay').classList.add('show');
+  
+  const ov = document.getElementById('ptOverlay');
+  if(ov) ov.classList.add('show');
   panel.classList.add('show');
   panel.setAttribute('aria-hidden','false');
+  document.body.classList.add('no-scroll');
 }
+
 function closeFactorPanel(){
   const p=document.getElementById('ptPanel'); if(!p) return;
   p.classList.remove('show'); p.setAttribute('aria-hidden','true');
   const o=document.getElementById('ptOverlay'); if(o) o.classList.remove('show');
+  document.body.classList.remove('no-scroll');
 }
 
 /* ---------- Página METODOLOGÍA ---------- */
@@ -492,19 +549,19 @@ function renderMetodologia(){
         'organizados según el modelo de acreditación en alta calidad (Acuerdo CESU 01 de 2025). '+
         'Haz clic en un factor para leer su alcance y saltar a sus indicadores.</p>'+
       '</div>'+
-
       '<div class="pt-grid pt-grid--flow">'+cards+'</div>'+
     '</div>'+
     '<div class="pt-overlay" id="ptOverlay"></div>'+
     '<div class="fdlg" id="ptPanel" role="dialog" aria-modal="true" aria-hidden="true"></div>';
 
   document.querySelectorAll('#metodologiaContent .pt-card').forEach(c=>c.onclick=()=>openFactorPanel(+c.dataset.i));
-  document.getElementById('ptOverlay').onclick=closeFactorPanel;
+  const ov = document.getElementById('ptOverlay');
+  if(ov) ov.onclick=closeFactorPanel;
 }
 
 /* ---------- Página DATOS ---------- */
 let datosQuery='';
-let datosFactor=-1;   // -1 = todos los factores
+let datosFactor=-1;
 
 function renderDatos(){
   const rows=[];
@@ -563,11 +620,12 @@ function renderDatos(){
 
   const inp=document.getElementById('datosQ');
   inp.oninput=e=>{ datosQuery=e.target.value; const pos=e.target.selectionStart; renderDatos();
-    const nq=document.getElementById('datosQ'); nq.focus(); nq.setSelectionRange(pos,pos); };
-  // Filtro por factor: dropdown personalizado (índice 0 = Todos los factores)
+    const nq=document.getElementById('datosQ'); if(nq){ nq.focus(); nq.setSelectionRange(pos,pos); } };
+  
   const dd=makeDropdown(document.getElementById('ddDatos'),'ddDatosLbl', sel=>{ datosFactor=sel-1; renderDatos(); });
   dd.setItems(['Todos los factores'].concat(
     DB.factors.map(f=>String(f.n).padStart(2,'0')+' · '+f.factor)), datosFactor+1);
+  
   document.getElementById('dlCsv').onclick=downloadCSV;
   document.querySelectorAll('#datosContent .dz-link').forEach(b=>b.onclick=()=>{
     curFactor=+b.dataset.fi; curInd=+b.dataset.ii; location.hash='/factores';
@@ -590,12 +648,15 @@ function downloadCSV(){
   URL.revokeObjectURL(url);
 }
 
-/* ---------- Colapsar/expandir el sidebar ---------- */
+/* ---------- Colapsar/expandir el sidebar (Escritorio) ---------- */
 function setSidebarCollapsed(on){
-  document.querySelector('.layout').classList.toggle('is-collapsed', on);
+  const layout = document.querySelector('.layout');
+  if(layout) layout.classList.toggle('is-collapsed', on);
   const btn=document.getElementById('sbToggle');
-  btn.setAttribute('aria-label', on?'Expandir menú':'Contraer menú');
-  btn.title = on?'Expandir menú':'Contraer menú';
+  if(btn){
+    btn.setAttribute('aria-label', on?'Expandir menú':'Contraer menú');
+    btn.title = on?'Expandir menú':'Contraer menú';
+  }
   try{ localStorage.setItem('sbCollapsed', on?'1':'0'); }catch(e){}
 }
 
@@ -605,25 +666,33 @@ function wireEvents(){
     b.onclick = () => { location.hash = '/' + b.dataset.page; });
   window.addEventListener('hashchange', router);
 
-  // Sidebar colapsable (recuerda el estado)
+  // Manejo del menú hamburguesa móvil
+  const mbBtn = document.getElementById('mbMenuBtn');
+  if(mbBtn) mbBtn.onclick = toggleMobileMenu;
+
+  const sbOv = document.getElementById('sbOverlay');
+  if(sbOv) sbOv.onclick = closeMobileMenu;
+
+  // Sidebar colapsable en escritorio
   let collapsed=false;
   try{ collapsed = localStorage.getItem('sbCollapsed')==='1'; }catch(e){}
   setSidebarCollapsed(collapsed);
-  document.getElementById('sbToggle').onclick=()=>
+  
+  const sbToggle = document.getElementById('sbToggle');
+  if(sbToggle) sbToggle.onclick=()=>
     setSidebarCollapsed(!document.querySelector('.layout').classList.contains('is-collapsed'));
-  document.getElementById('overlay').onclick=e=>{ if(e.target.id==='overlay') closeModal(); };
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeFactorPanel(); } });
+  
+  const overlay = document.getElementById('overlay');
+  if(overlay) overlay.onclick=e=>{ if(e.target.id==='overlay') closeModal(); };
+  
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeFactorPanel(); closeMobileMenu(); } });
 
-  // Barra de filtros: dropdowns Factor -> Indicador
+  // Dropdowns de la barra de filtros en Factores
   ddFactor = makeDropdown(document.getElementById('ddFactor'), 'ddFactorLbl', i=>{ curFactor=i; curInd=0; renderFactores(); });
   ddInd = makeDropdown(document.getElementById('ddInd'), 'ddIndLbl', i=>{ curInd=i; renderContent(); });
 }
 
-/* ---------- Une pares "X" + "X (Nacional)" en una comparación ----------
-   En la matriz, los indicadores comparados con el nivel nacional vienen como
-   dos filas: "X" (Unimagdalena) y "X (Nacional)". Aquí se enlazan: el indicador
-   base recibe la serie nacional en values_ref y se retira la fila "(Nacional)"
-   suelta (pasa a ser la línea de comparación gris dentro del gráfico). */
+/* ---------- Merge de pares con serie Nacional ---------- */
 function mergeNacional(){
   DB.factors.forEach(f=>{
     const byName={};
@@ -648,9 +717,12 @@ async function init(){
     if(!res.ok) throw new Error('HTTP '+res.status);
     DB = await res.json();
   }catch(err){
-    document.getElementById('content').innerHTML =
-      '<div class="empty">No se pudo cargar <b>data/datos_indicadores.json</b>.<br>'+
-      'Abre el proyecto desde un servidor local (ver README): <code>python -m http.server 8000</code></div>';
+    const contentEl = document.getElementById('content');
+    if(contentEl){
+      contentEl.innerHTML =
+        '<div class="empty">No se pudo cargar <b>data/datos_indicadores.json</b>.<br>'+
+        'Abre el proyecto desde un servidor local (ver README): <code>python -m http.server 8000</code></div>';
+    }
     console.error(err);
     return;
   }
@@ -659,7 +731,7 @@ async function init(){
   try{
     const rd = await fetch('data/factores_detalle.json', {cache:'no-cache'});
     if(rd.ok){ (await rd.json()).factores.forEach(f=>DETALLE[f.n]=f); }
-  }catch(e){ /* el detalle es opcional; el modal cae a la descripción breve */ }
+  }catch(e){ /* detalle opcional */ }
   wireEvents();
   router();
 }

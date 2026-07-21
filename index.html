@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Unimagdalena en Cifras · Indicadores por Factor 2020–2025</title>
 <meta name="description" content="Tablero interactivo de indicadores institucionales de la Universidad del Magdalena por factor de acreditación, serie 2020–2025.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,8 +12,20 @@
 <link rel="stylesheet" href="assets/css/tokens.css">
 </head>
 <body>
+<!-- Encabezado superior exclusivo para pantallas móviles / tablets (< 920px) -->
+<header class="mobile-header">
+  <div class="mh-brand">
+    <div class="mh-logo"><img src="assets/img/escudo-unimagdalena.png" alt="Escudo Universidad del Magdalena"></div>
+    <div class="mh-title">UNIMAGDALENA<span>Indicadores por Factor</span></div>
+  </div>
+  <button class="mb-menu-btn" id="mbMenuBtn" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="sidebar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
+<div class="sb-overlay" id="sbOverlay" aria-hidden="true"></div>
+
 <div class="layout">
-  <aside class="sidebar">
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Navegación principal">
     <div class="sb-brand">
       <div class="sb-logo"><img src="assets/img/escudo-unimagdalena.png" alt="Escudo Universidad del Magdalena"></div>
       <div class="sb-title">UNIMAGDALENA<span>Indicadores por Factor</span></div>
