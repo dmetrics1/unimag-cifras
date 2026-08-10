@@ -13,6 +13,10 @@ cambio funcional), **Responsive**, **Accesibilidad**, **Rendimiento**, **Docs**.
 
 ## [Sin publicar]
 
+### Refactor / Deuda Técnica
+- **Pipeline de datos (`scripts/generar_json.py`)**: Integración automática de `data/tipos_grafico.json` y `datos_indicadores.json`. Al regenerar desde el Excel, se preservan automáticamente los atributos `"chart"` (barras/línea) y `"dual"` (comparativo nacional) de los 87/92 indicadores.
+- **Limpieza de código legado**: Removidas las funciones obsoletas `sparkline()` y `bigChart()` en `assets/js/app.js`, la función heredada `closeModal()`, y el contenedor `<div class="overlay" id="overlay">` en `index.html`.
+
 ### Docs
 - Documentación de calidad producción: `docs/ARQUITECTURA.md`, `docs/RESPONSIVE.md`,
   `docs/ESTILOS.md`, `docs/JAVASCRIPT.md`, `docs/COMPONENTES.md`,

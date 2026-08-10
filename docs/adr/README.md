@@ -198,39 +198,16 @@ Estados posibles: `Propuesta` · `Aceptada` · `Reemplazada` · `Obsoleta`.
 
 ---
 
-### ADR-005: Los campos `chart` y `dual` no los genera el pipeline
+### ADR-005: Integración automática de los campos `chart` y `dual` en el pipeline
 
-- **Estado:** Aceptada
-- **Contexto:** Cada indicador puede necesitar un **tipo de gráfico** distinto
-  (línea o barras) y algunos son **comparativos duales** (serie Unimagdalena vs.
-  Nacional). Esa intención de visualización no está en la matriz de datos: se
-  extrajo de los **gráficos del documento Word oficial** de autoevaluación, donde
-  cada indicador ya tenía una representación decidida. El script
-  `generar_json.py` solo produce, por indicador, `name`, `values` y `pct` — no
-  emite `chart` ni `dual`.
-- **Decisión:** Mantener la metainformación de visualización (`chart`, `dual`)
-  **aparte del pipeline**, aplicada al JSON de forma independiente (por ejemplo,
-  desde un `tipos_grafico.json` / edición posterior), y resolver el resto en
-  runtime: `mergeNacional()` fija `dual` y `chart:'linea'` a los pares con serie
-  Nacional (ver ADR-010), y `mountChart()` lee `ind.chart==='barras'` para decidir
-  entre `buildBarSVG` y `buildLineSVG`.
+- **Estado:** Aceptada (Resuelta)
+- **Contexto:** Cada indicador requiere un tipo de gráfico específico (`"barras"` o `"linea"`) y algunos son comparativos duales (`"dual": true`). Anteriormente, `generar_json.py` no producía estos campos al leer el Excel y se borraban en cada regeneración.
+- **Decisión:** Integrar en `generar_json.py` la lectura automática de `data/tipos_grafico.json` (y/o `datos_indicadores.json` existente) para inyectar automáticamente `"chart"` y `"dual"` en el JSON resultante durante la ingesta.
 - **Consecuencias:**
-  - *A favor:* respeta la decisión de visualización tomada en el documento oficial
-    sin forzarla dentro de la matriz de datos, que se mantiene "limpia" (solo
-    cifras); permitió avanzar sin rediseñar el Excel ni el script.
-  - *En contra (deuda técnica):* estos campos **se pierden si se regenera el JSON**
-    desde el Excel, porque el script los sobrescribe y no los conoce; hay que
-    reaplicarlos tras cada regeneración. Es un punto frágil del flujo de
-    actualización.
+  - *A favor:* El proceso de generación de datos desde el Excel es 100% reproducible y seguro; no se pierde ninguna personalización de gráfico ni la configuración dual de los 87/92 indicadores.
+  - *En contra:* Ninguno notable. La matriz Excel original sigue limpia de metainformación de diseño.
 - **Alternativas consideradas:**
-  - *Añadir columnas `chart`/`dual` al Excel e integrarlas al pipeline:* es la
-    **mejora futura recomendada** (haría el JSON reproducible de una sola pasada),
-    pero exigía tocar la matriz oficial y el script; se pospuso.
-  - *Codificar el tipo de gráfico dentro de `app.js` por nombre de indicador:*
-    descartado por acoplar datos y lógica y volverse inmanejable con muchos
-    indicadores.
-- **Nota:** marcado explícitamente como **deuda técnica**; integrar `chart`/`dual`
-  al pipeline es una mejora pendiente.
+  - *Reposición manual tras regenerar:* Descartada por ser propensa a errores humanos.
 
 ---
 

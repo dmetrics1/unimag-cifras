@@ -94,46 +94,6 @@ function trend(vals){
   return {dir:p>0.5?'up':p<-0.5?'down':'flat', pct:p};
 }
 
-/* ---------- Sparkline (mini gráfico de tarjeta) ---------- */
-function sparkline(vals, w=278, h=46){
-  const pts = vals.map((v,i)=>({v,i})).filter(p=>p.v!==null);
-  if(pts.length<2) return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid meet"></svg>';
-  const xs=vals.length-1, mn=Math.min(...pts.map(p=>p.v)), mx=Math.max(...pts.map(p=>p.v)), rng=mx-mn||1;
-  const X=i=>8+(i/xs)*(w-16), Y=v=>h-6-((v-mn)/rng)*(h-14);
-  let d='';pts.forEach((p,k)=>{d+=(k?'L':'M')+X(p.i).toFixed(1)+' '+Y(p.v).toFixed(1)+' ';});
-  const area=d+'L'+X(pts[pts.length-1].i).toFixed(1)+' '+h+' L'+X(pts[0].i).toFixed(1)+' '+h+' Z';
-  const last=pts[pts.length-1];
-  return '<svg width="100%" height="'+h+'" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid meet">'+
-    '<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+ACCENT+'" stop-opacity="0.18"/><stop offset="1" stop-color="'+ACCENT+'" stop-opacity="0"/></linearGradient></defs>'+
-    '<path d="'+area+'" fill="url(#sg)"/>'+
-    '<path d="'+d+'" fill="none" stroke="'+ACCENT+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'+
-    '<circle cx="'+X(last.i).toFixed(1)+'" cy="'+Y(last.v).toFixed(1)+'" r="3.4" fill="'+GOLD+'"/></svg>';
-}
-
-/* ---------- Gráfico grande (modal) ---------- */
-function bigChart(vals, pct){
-  const w=760, h=310, pad={l:58,r:22,t:26,b:36};
-  const pts=vals.map((v,i)=>({v,i})).filter(p=>p.v!==null);
-  if(pts.length<2) return '<div class="empty">Datos insuficientes para graficar</div>';
-  const mn0=Math.min(...pts.map(p=>p.v)), mx0=Math.max(...pts.map(p=>p.v));
-  const pv=(mx0-mn0)*0.12 || Math.abs(mx0)*0.1 || 1;
-  const mn=mn0-pv, mx=mx0+pv, rng=mx-mn||1;
-  const X=i=>pad.l+(i/(vals.length-1))*(w-pad.l-pad.r), Y=v=>h-pad.b-((v-mn)/rng)*(h-pad.t-pad.b);
-  let line='';pts.forEach((p,k)=>{line+=(k?'L':'M')+X(p.i).toFixed(1)+' '+Y(p.v).toFixed(1)+' ';});
-  const area=line+'L'+X(pts[pts.length-1].i).toFixed(1)+' '+(h-pad.b)+' L'+X(pts[0].i).toFixed(1)+' '+(h-pad.b)+' Z';
-  let grid='';const N=4;
-  for(let g=0;g<=N;g++){const gv=mn+(rng*g/N), gy=Y(gv);
-    grid+='<line x1="'+pad.l+'" y1="'+gy.toFixed(1)+'" x2="'+(w-pad.r)+'" y2="'+gy.toFixed(1)+'" stroke="#DCE5EE"/>';
-    grid+='<text x="'+(pad.l-9)+'" y="'+(gy+4).toFixed(1)+'" text-anchor="end" font-size="11" fill="#8295AB" font-family="Inter">'+fmt(gv,pct)+'</text>';}
-  let xl='';YEARS.forEach((yr,i)=>{xl+='<text x="'+X(i).toFixed(1)+'" y="'+(h-13)+'" text-anchor="middle" font-size="11.5" fill="#51637A" font-family="Outfit" font-weight="600">'+yr+'</text>';});
-  let dots='';pts.forEach(p=>{dots+='<circle cx="'+X(p.i).toFixed(1)+'" cy="'+Y(p.v).toFixed(1)+'" r="4.2" fill="#fff" stroke="'+ACCENT+'" stroke-width="2.5"/>';
-    dots+='<text x="'+X(p.i).toFixed(1)+'" y="'+(Y(p.v)-12).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#14243A" font-family="Outfit">'+fmt(p.v,pct)+'</text>';});
-  return '<svg width="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="xMidYMid meet" style="max-width:100%">'+
-    '<defs><linearGradient id="ba" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+ACCENT+'" stop-opacity="0.15"/><stop offset="1" stop-color="'+ACCENT+'" stop-opacity="0"/></linearGradient></defs>'+
-    grid+'<path d="'+area+'" fill="url(#ba)"/>'+
-    '<path d="'+line+'" fill="none" stroke="'+ACCENT+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'+dots+xl+'</svg>';
-}
-
 /* ---------- Accesores de estado ---------- */
 function currentFactor(){ return DB.factors[curFactor]; }
 function currentInd(){ return currentFactor().indicators[curInd]; }
@@ -370,12 +330,6 @@ function buildBarSVG(ind, years, w, h){
   });
 
   return '<svg width="100%" height="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+grid+bars+xl+'</svg>';
-}
-
-function closeModal(){
-  const ov = document.getElementById('overlay');
-  if(ov) ov.classList.remove('show');
-  document.body.classList.remove('no-scroll');
 }
 
 /* ---------- Página INICIO ---------- */
@@ -682,10 +636,7 @@ function wireEvents(){
   if(sbToggle) sbToggle.onclick=()=>
     setSidebarCollapsed(!document.querySelector('.layout').classList.contains('is-collapsed'));
   
-  const overlay = document.getElementById('overlay');
-  if(overlay) overlay.onclick=e=>{ if(e.target.id==='overlay') closeModal(); };
-  
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeModal(); closeFactorPanel(); closeMobileMenu(); } });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeFactorPanel(); closeMobileMenu(); } });
 
   // Dropdowns de la barra de filtros en Factores
   ddFactor = makeDropdown(document.getElementById('ddFactor'), 'ddFactorLbl', i=>{ curFactor=i; curInd=0; renderFactores(); });

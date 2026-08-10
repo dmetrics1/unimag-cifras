@@ -184,29 +184,16 @@ Esquema de salida:
 }
 ```
 
-> ### ⚠️ ADVERTENCIA CRÍTICA — se pierden `chart` y `dual` al regenerar
+> ### ✅ INTEGRACIÓN AUTOMÁTICA DE `chart` Y `dual`
 >
-> `generar_json.py` **NO** produce los campos `chart` (tipo de gráfico:
-> `"barras"` o `"linea"`) ni `dual` (comparación con nivel nacional). Solo emite
-> `name`, `values` y `pct`.
+> `generar_json.py` carga automáticamente los metadatos de [`data/tipos_grafico.json`](../data/tipos_grafico.json)
+> (y/o del `datos_indicadores.json` existente) al regenerar los datos desde el Excel.
 >
-> Esos dos campos están puestos **a mano** en `data/datos_indicadores.json` y
-> respaldados en [`data/tipos_grafico.json`](../data/tipos_grafico.json). Cada
-> vez que corras el script, el JSON se **sobrescribe entero** y esas
-> personalizaciones **desaparecen**.
+> Por lo tanto, los campos `chart` (`"barras"` / `"linea"`) y `dual` (`true` / `false`) se
+> **preservan automáticamente** para cada indicador sin necesidad de intervención manual.
 >
-> **Cómo reponerlas después de regenerar:** consulta `data/tipos_grafico.json`
-> (tiene, por indicador, su `factor`, `name`, `chart` y `dual`) y vuelve a
-> aplicar `chart` (y `dual` cuando corresponda) sobre las entradas
-> correspondientes de `datos_indicadores.json`.
->
-> Como red de seguridad, **haz una copia** del JSON antes de regenerar
-> (p. ej. `datos_indicadores.json.bak`) para poder comparar y recuperar los
-> campos. Ten en cuenta que `.gitignore` ignora `*.bak`.
->
-> **Mejora futura sugerida:** integrar `chart`/`dual` al pipeline —por ejemplo,
-> que `generar_json.py` lea `tipos_grafico.json` y los fusione automáticamente al
-> escribir el JSON— para que dejen de perderse en cada regeneración.
+> En la salida por consola se muestra el desglose exacto:
+> `Factores: 12 | Indicadores: 92 (Barras: 42 | Línea: 50 | Duales: 10)`
 
 ### Indicadores comparados con el nivel Nacional
 
