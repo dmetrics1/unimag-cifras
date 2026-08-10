@@ -405,10 +405,9 @@ function renderInicio(){
   document.getElementById('inicioContent').innerHTML=
     '<div class="ih-hero">'+
       '<span class="ih-pill">'+per+'</span>'+
-      '<h1 class="ih-title">Cifras de Autoevaluación<br>Acreditación institucional</h1>'+
-      '<div class="ih-sub">Indicadores por factor</div>'+
-      '<p class="ih-desc">De la Universidad de procesos a la Universidad de resultados e impactos: '+
-      '<b>Indicadores por factor</b>.</p>'+
+      '<h1 class="ih-title">Cifras de Autoevaluación<br>Indicadores por factor</h1>'+
+      '<div class="ih-sub">Acreditación institucional</div>'+
+      '<p class="ih-desc">De la Universidad de procesos a la Universidad de resultados e impactos.</p>'+
       '<div class="ih-actions">'+
         '<button class="ih-btn ih-btn--primary" id="ihFactores">Explorar factores</button>'+
         '<button class="ih-btn ih-btn--ghost" id="ihMetodo">Ver metodología</button>'+
