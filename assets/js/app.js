@@ -405,10 +405,10 @@ function renderInicio(){
   document.getElementById('inicioContent').innerHTML=
     '<div class="ih-hero">'+
       '<span class="ih-pill">'+per+'</span>'+
-      '<h1 class="ih-title">UNIMAGDALENA<br>EN CIFRAS</h1>'+
+      '<h1 class="ih-title">Cifras de Autoevaluación<br>Acreditación institucional</h1>'+
       '<div class="ih-sub">Indicadores por factor</div>'+
-      '<p class="ih-desc">La evolución de la Universidad entre 2020 y 2025, contada con datos verificables: '+
-      'el tránsito de una universidad de procesos a una <b>universidad de resultados e impactos</b>.</p>'+
+      '<p class="ih-desc">De la Universidad de procesos a la Universidad de resultados e impactos: '+
+      '<b>Indicadores por factor</b>.</p>'+
       '<div class="ih-actions">'+
         '<button class="ih-btn ih-btn--primary" id="ihFactores">Explorar factores</button>'+
         '<button class="ih-btn ih-btn--ghost" id="ihMetodo">Ver metodología</button>'+
