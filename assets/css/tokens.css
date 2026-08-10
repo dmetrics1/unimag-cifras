@@ -436,10 +436,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .ih-title {
   font-family: var(--font-display);
   color: #fff;
-  font-size: clamp(2.2rem, 3.6vw, 44px);
-  font-weight: 600;
-  line-height: 1.1;
-  letter-spacing: -0.5px;
+  font-size: clamp(2.4rem, 4.2vw, 50px);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.8px;
   margin-top: 14px;
 }
 
