@@ -51,7 +51,12 @@ ANIOS = [2020, 2021, 2022, 2023, 2024, 2025]
 CLAVES_PCT = [
     "porcentaje", "tasa", "nivel de satisfacción", "aporte relativo",
     "participación", "absorción", "selectividad", "empleabilidad",
-    "deserción", "graduación",
+    "deserción",
+]
+
+# Frases que contienen una palabra porcentual, pero representan magnitudes.
+EXCLUSIONES_PCT = [
+    "número promedio de semestres",
 ]
 
 
@@ -68,7 +73,9 @@ def limpiar(v):
 
 def es_porcentaje(nombre):
     n = (nombre or "").lower()
-    return any(clave in n for clave in CLAVES_PCT)
+    return not any(frase in n for frase in EXCLUSIONES_PCT) and any(
+        clave in n for clave in CLAVES_PCT
+    )
 
 
 def cargar_mapa_tipos():
@@ -180,4 +187,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

@@ -27,8 +27,9 @@ menú hamburguesa ☰ en celular):
   abre una ficha con su **definición oficial** y sus **características de alta
   calidad** (Consejo Nacional de Acreditación), más un botón a sus indicadores.
 
-En **escritorio** el menú lateral se puede **colapsar** con el botón junto al
-logo. En **celular** aparece una barra superior con el botón ☰ que abre el menú.
+En **escritorio** el menú lateral inicia compacto y se expande al pasar el cursor
+o al navegar con teclado. El botón junto al logo permite fijarlo abierto. En
+**celular** aparece una barra superior con el botón ☰ que abre el menú.
 
 ---
 
@@ -84,15 +85,15 @@ El catálogo completo de tokens está en [ESTILOS.md](ESTILOS.md).
 3. Ejecuta `python scripts/generar_json.py`.
 
 El tablero toma los años directamente del JSON, así que los ejes y las tablas se
-ajustan solos. (Recuerda reponer los campos `chart`/`dual`; ver la
-[guía de desarrollador](GUIA_DESARROLLADOR.md)).
+ajustan solos. El generador conserva automáticamente los campos `chart`/`dual`;
+ver la [guía de desarrollador](GUIA_DESARROLLADOR.md).
 
 ---
 
 ## 6. Ideas para seguir (pendientes sugeridos)
 
-- **Integrar `chart`/`dual` al pipeline** de `generar_json.py` para que no se pierdan
-  al regenerar el JSON (hoy están en `data/tipos_grafico.json` y se aplican aparte).
+- **Validar `chart`/`dual` en CI** cuando se agreguen indicadores nuevos al archivo
+  `data/tipos_grafico.json`.
 - **Exportar** cada gráfico a PNG o el factor completo a PDF.
 - **Marcar visualmente** los años sin dato (hoy la línea/serie simplemente salta).
 - **Poblar la serie Nacional faltante** para nuevos indicadores comparativos.

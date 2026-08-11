@@ -331,15 +331,14 @@ Casi todo el cableado vive en `wireEvents()` (llamada una vez desde `init`):
 | `window` `hashchange` | `router` (navegación por hash). |
 | `#mbMenuBtn` (click) | `toggleMobileMenu`. |
 | `#sbOverlay` (click) | `closeMobileMenu`. |
-| Sidebar escritorio | Lee `localStorage['sbCollapsed']`, aplica estado inicial con `setSidebarCollapsed`, y cablea `#sbToggle` para alternarlo. |
+| Sidebar escritorio | Inicia compacto, se expande con hover/foco y `#sbToggle` permite fijarlo abierto mediante `setSidebarPinned`. |
 | `#overlay` (click) | `closeModal` (solo si el click es en el overlay mismo). |
 | `document` `keydown` Escape | Cierra todo: `closeModal()`, `closeFactorPanel()`, `closeMobileMenu()`. |
 | Dropdowns | Crea `ddFactor` y `ddInd` con `makeDropdown`, definiendo sus callbacks `onSelect`. |
 
-`setSidebarCollapsed(on)` alterna `.is-collapsed` en `.layout`, actualiza el
-`aria-label`/`title` del botón y **persiste** el estado en `localStorage['sbCollapsed']`
-(envuelto en `try/catch` por si el almacenamiento está bloqueado). Es la única
-preferencia persistida del tablero.
+`setSidebarPinned(pinned)` alterna `.is-pinned`/`.is-collapsed` en `.layout` y
+actualiza `aria-label`, `title` y `aria-pressed`. El estado inicial siempre es
+compacto; la expansión temporal por hover/foco se resuelve en CSS.
 
 Handlers cableados dentro de los `render*` (no en `wireEvents`, porque los nodos se
 recrean en cada render): botones del hero de inicio, tarjetas de metodología, input y

@@ -49,7 +49,7 @@ Estados posibles: `Propuesta` · `Aceptada` · `Reemplazada` · `Obsoleta`.
 | [ADR-002](#adr-002-sin-proceso-de-build-sin-bundler-sin-npm) | Sin proceso de build / sin bundler / sin npm | Aceptada |
 | [ADR-003](#adr-003-gráficos-en-svg-generados-por-javascript-sin-librería) | Gráficos en SVG generados por JavaScript (sin librería) | Aceptada |
 | [ADR-004](#adr-004-datos-en-json-desacoplado-del-diseño-generado-desde-excel-con-python) | Datos en JSON desacoplado, generado desde Excel con Python | Aceptada |
-| [ADR-005](#adr-005-los-campos-chart-y-dual-no-los-genera-el-pipeline) | Los campos `chart`/`dual` no los genera el pipeline | Aceptada |
+| [ADR-005](#adr-005-integración-automática-de-los-campos-chart-y-dual-en-el-pipeline) | Integración automática de `chart`/`dual` en el pipeline | Aceptada |
 | [ADR-006](#adr-006-enrutado-por-hash-en-una-spa-de-una-sola-página) | Enrutado por hash (`#/página`) en una SPA | Aceptada |
 | [ADR-007](#adr-007-estrategia-css-desktop-first-con-un-único-breakpoint-móvil) | CSS Desktop-first con un único breakpoint móvil | Aceptada |
 | [ADR-008](#adr-008-sistema-de-diseño-con-custom-properties-tokens-en-un-solo-archivo) | Sistema de diseño con Custom Properties (tokens) | Aceptada |
@@ -310,9 +310,9 @@ Estados posibles: `Propuesta` · `Aceptada` · `Reemplazada` · `Obsoleta`.
   disponible y ser reconocible como patrón institucional. En escritorio hay
   espacio para una barra lateral persistente; en móvil ese espacio es escaso y la
   barra lateral estorbaría el contenido.
-- **Decisión:** Implementar un **sidebar fijo** en escritorio, **colapsable** a un
-  riel de iconos (72px) mediante `.layout.is-collapsed`, cuyo estado se **persiste
-  en `localStorage`** (`sbCollapsed`) para recordarlo entre visitas. Bajo 920px el
+- **Decisión:** Implementar un **sidebar fijo** en escritorio, compacto por defecto
+  como riel de iconos (72px) mediante `.layout.is-collapsed`. Se expande con hover
+  o foco y el usuario puede fijarlo abierto mediante `.layout.is-pinned`. Bajo 920px el
   mismo sidebar se convierte en un **drawer** deslizante (`.sidebar.is-open`) con
   backdrop (`.sb-overlay`) y se añade un **header con botón hamburguesa**
   (`.mobile-header`). El drawer se cierra automáticamente al navegar, con la tecla
@@ -323,9 +323,9 @@ Estados posibles: `Propuesta` · `Aceptada` · `Reemplazada` · `Obsoleta`.
     marcado** reutilizada en ambos contextos; el estado de colapso persistente
     respeta la preferencia del usuario; buen uso del espacio en cada tamaño de
     pantalla.
-  - *En contra:* la lógica de apertura/cierre (drawer, overlay, hamburguesa,
-    colapso, `localStorage`) se maneja a mano en `app.js` (`openMobileMenu`,
-    `closeMobileMenu`, `setSidebarCollapsed`); son varios estados que deben
+  - *En contra:* la lógica de apertura/cierre (drawer, overlay, hamburguesa y
+    fijación) se maneja a mano en `app.js` (`openMobileMenu`,
+    `closeMobileMenu`, `setSidebarPinned`); son varios estados que deben
     mantenerse coherentes.
 - **Alternativas consideradas:**
   - *Navegación superior horizontal:* peor aprovechamiento vertical y menos

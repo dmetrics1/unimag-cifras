@@ -11,7 +11,26 @@ cambio funcional), **Responsive**, **Accesibilidad**, **Rendimiento**, **Docs**.
 
 ---
 
-## [Sin publicar]
+## [1.3.12] – 2026-08-10
+
+### Corregido
+- Clasificación del indicador de promedio de semestres como valor numérico, no porcentaje.
+- Estado de error visible cuando no se puede cargar el JSON principal.
+- Gestión de foco en el modal, navegación del drawer móvil y semántica accesible de controles, tabla y gráficos.
+- Enlaces profundos para factor e indicador, nombre dinámico del CSV y barras con valores negativos.
+- Validación automática de datos y sintaxis antes del despliegue.
+
+### Diseño
+- Rediseño de la portada de Inicio dentro del sistema visual azul/blanco institucional, con la silla y el paisaje del informe como ilustración protagonista.
+- Nueva composición responsive inspirada en el portal institucional y el visor de Cuadros Maestros, con titular, acciones y métricas integradas.
+- Ajuste de altura en escritorio para mostrar la portada completa sin desplazamiento vertical residual.
+- Sidebar compacto por defecto, expansión automática con hover/foco y opción para fijarlo abierto, siguiendo el patrón del visor de Cuadros Maestros.
+- Sincronización del contenido con la expansión temporal del sidebar para evitar superposición.
+- Corrección del control mostrar/ocultar: iconos diferenciados por estado y liberación de foco al compactar.
+- Ajuste responsive de la portada cuando el sidebar se expande para mantener visibles sus botones de acción.
+- Integración de las métricas en el flujo de la portada para eliminar el espacio vertical vacío y conservar la composición al expandir el menú.
+- Crédito institucional simplificado a **Oficina Asesora de Planeación** en el pie del menú, con la sigla **OAP** en estado compacto.
+- Texto de presentación actualizado para referirse a la **acreditación institucional**.
 
 ### Refactor / Deuda Técnica
 - **Pipeline de datos (`scripts/generar_json.py`)**: Integración automática de `data/tipos_grafico.json` y `datos_indicadores.json`. Al regenerar desde el Excel, se preservan automáticamente los atributos `"chart"` (barras/línea) y `"dual"` (comparativo nacional) de los 87/92 indicadores.

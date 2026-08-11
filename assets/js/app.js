@@ -26,10 +26,15 @@ let curPage = 'inicio';
 function showPage(page){
   if(!PAGES.includes(page)) page = 'inicio';
   curPage = page;
+  document.body.classList.toggle('page-home', page === 'inicio');
   document.querySelectorAll('.page').forEach(s =>
     s.classList.toggle('is-active', s.id === 'page-' + page));
-  document.querySelectorAll('#pageNav .nav__item').forEach(b =>
-    b.classList.toggle('is-active', b.dataset.page === page));
+  document.querySelectorAll('#pageNav .nav__item').forEach(b => {
+    const active = b.dataset.page === page;
+    b.classList.toggle('is-active', active);
+    if(active) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  });
   
   // Cierre automático del menú móvil al navegar
   closeMobileMenu();
@@ -45,8 +50,25 @@ function showPage(page){
 }
 
 function router(){
-  const h = (location.hash || '').replace(/^#\/?/, '');
-  showPage(h || 'inicio');
+  const route = (location.hash || '').replace(/^#\/?/, '');
+  const [page, query=''] = route.split('?');
+  if(page==='factores' && DB){
+    const params=new URLSearchParams(query);
+    const factorNumber=Number(params.get('factor'));
+    const indicatorIndex=Number(params.get('indicador'));
+    const factorIndex=DB.factors.findIndex(f=>f.n===factorNumber);
+    if(factorIndex>=0) curFactor=factorIndex;
+    if(Number.isInteger(indicatorIndex) && indicatorIndex>=0 && indicatorIndex<currentFactor().indicators.length){
+      curInd=indicatorIndex;
+    }
+  }
+  showPage(page || 'inicio');
+}
+
+function navigateToIndicator(factorIndex, indicatorIndex=0){
+  const factor=DB.factors[factorIndex];
+  if(!factor) return;
+  location.hash='/factores?factor='+factor.n+'&indicador='+indicatorIndex;
 }
 
 /* ---------- Menú Móvil (Drawer) ---------- */
@@ -54,7 +76,7 @@ function openMobileMenu(){
   const sb = document.getElementById('sidebar');
   const ov = document.getElementById('sbOverlay');
   const btn = document.getElementById('mbMenuBtn');
-  if(sb) sb.classList.add('is-open');
+  if(sb){ sb.classList.add('is-open'); sb.removeAttribute('inert'); sb.setAttribute('aria-hidden','false'); }
   if(ov) ov.classList.add('is-active');
   if(btn) btn.setAttribute('aria-expanded', 'true');
   document.body.classList.add('no-scroll');
@@ -64,7 +86,11 @@ function closeMobileMenu(){
   const sb = document.getElementById('sidebar');
   const ov = document.getElementById('sbOverlay');
   const btn = document.getElementById('mbMenuBtn');
-  if(sb) sb.classList.remove('is-open');
+  if(sb){
+    sb.classList.remove('is-open');
+    if(window.matchMedia('(max-width: 919px)').matches){ sb.setAttribute('inert',''); sb.setAttribute('aria-hidden','true'); }
+    else { sb.removeAttribute('inert'); sb.removeAttribute('aria-hidden'); }
+  }
   if(ov) ov.classList.remove('is-active');
   if(btn) btn.setAttribute('aria-expanded', 'false');
   document.body.classList.remove('no-scroll');
@@ -74,6 +100,16 @@ function toggleMobileMenu(){
   const sb = document.getElementById('sidebar');
   if(sb && sb.classList.contains('is-open')) closeMobileMenu();
   else openMobileMenu();
+}
+
+function syncSidebarAccessibility(){
+  const sb=document.getElementById('sidebar');
+  if(!sb) return;
+  if(window.matchMedia('(max-width: 919px)').matches && !sb.classList.contains('is-open')){
+    sb.setAttribute('inert',''); sb.setAttribute('aria-hidden','true');
+  }else{
+    sb.removeAttribute('inert'); sb.setAttribute('aria-hidden','false');
+  }
 }
 
 /* ---------- Formato ---------- */
@@ -104,12 +140,13 @@ function escHtml(s){ return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&l
 let ddFactor = null, ddInd = null;
 
 function makeDropdown(root, labelId, onSelect){
+  const listId=root.id+'Listbox';
   root.innerHTML =
-    '<button type="button" class="dd__btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="'+labelId+'">'+
+    '<button type="button" class="dd__btn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="'+labelId+'" aria-controls="'+listId+'">'+
       '<span class="dd__val"></span>'+
       '<svg class="dd__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'+
     '</button>'+
-    '<div class="dd__menu" role="listbox" hidden></div>';
+    '<div class="dd__menu" id="'+listId+'" role="listbox" aria-labelledby="'+labelId+'" hidden></div>';
   const btn=root.querySelector('.dd__btn');
   const valEl=root.querySelector('.dd__val');
   const menu=root.querySelector('.dd__menu');
@@ -119,13 +156,16 @@ function makeDropdown(root, labelId, onSelect){
   function setValue(){ const t=items[selected]||''; valEl.textContent=t; btn.title=t; }
   function renderMenu(){
     menu.innerHTML=items.map((t,i)=>
-      '<div class="dd__opt'+(i===selected?' is-sel':'')+'" role="option" data-i="'+i+'" '+
+      '<div class="dd__opt'+(i===selected?' is-sel':'')+'" id="'+listId+'Opt'+i+'" role="option" data-i="'+i+'" '+
       'title="'+escHtml(t)+'" aria-selected="'+(i===selected)+'">'+escHtml(t)+'</div>').join('');
     opts().forEach(o=>{
       o.onclick=()=>{ choose(+o.dataset.i); };
     });
   }
-  function markActive(){ opts().forEach((o,i)=>o.classList.toggle('is-active',i===activeIdx)); }
+  function markActive(){
+    opts().forEach((o,i)=>o.classList.toggle('is-active',i===activeIdx));
+    btn.setAttribute('aria-activedescendant', listId+'Opt'+activeIdx);
+  }
   function open(){
     if(!items.length) return;
     menu.hidden=false; btn.setAttribute('aria-expanded','true');
@@ -139,6 +179,7 @@ function makeDropdown(root, labelId, onSelect){
   function close(){
     menu.hidden=true;
     btn.setAttribute('aria-expanded','false');
+    btn.removeAttribute('aria-activedescendant');
     document.removeEventListener('mousedown',onDoc,true);
     document.removeEventListener('touchstart',onDoc,true);
   }
@@ -191,7 +232,7 @@ function renderContent(){
     '<div class="fx-view">'+
       '<div class="fx-chart">'+
         '<div class="fx-chart__head">'+
-          '<span class="fx-chart__title">'+ind.name+'</span>'+
+          '<span class="fx-chart__title">'+escHtml(ind.name)+'</span>'+
           (ind.dual ?
             '<div class="fx-legend">'+
               '<span class="fx-leg"><i style="background:'+ACCENT+'"></i>Unimagdalena</span>'+
@@ -293,7 +334,8 @@ function buildLineSVG(ind, years, w, h){
     xl+='<text x="'+X(i).toFixed(1)+'" y="'+(h-10)+'" text-anchor="middle" font-size="'+yrFontSz+'" fill="#51637A" font-family="Outfit" font-weight="600">'+yr+'</text>';
   });
 
-  return '<svg width="100%" height="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+
+  return '<svg width="100%" height="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" role="img" aria-label="Gráfico de línea: '+escHtml(ind.name)+'">'+
+    '<title>'+escHtml(ind.name)+'</title>'+
     '<defs><linearGradient id="ba" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+ACCENT+'" stop-opacity="0.15"/><stop offset="1" stop-color="'+ACCENT+'" stop-opacity="0"/></linearGradient></defs>'+
     grid+'<path d="'+area+'" fill="url(#ba)"/>'+refLine+
     '<path d="'+line+'" fill="none" stroke="'+ACCENT+'" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>'+dots+endDot+xl+'</svg>';
@@ -313,12 +355,12 @@ function buildBarSVG(ind, years, w, h){
   const barW=Math.min(slot*0.55, 48);
   const cx=i=>pad.l+slot*i+slot/2;
   const {Y, grid}=chartFrame(w,h,mn,mx,pct,pad);
-  const base=Y(mn);
+  const base=Y(0);
   const lastI=pts[pts.length-1].i;
 
   const labelFontSz = w < 420 ? '9.5' : '11';
   let bars='';pts.forEach(p=>{
-    const x=cx(p.i)-barW/2, y=Y(p.v), bh=Math.max(0, base-y);
+    const x=cx(p.i)-barW/2, valueY=Y(p.v), y=Math.min(valueY,base), bh=Math.abs(base-valueY);
     const col=p.i===lastI ? '#004A87' : ACCENT;
     bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+bh.toFixed(1)+'" rx="3" fill="'+col+'"/>';
     bars+='<text x="'+cx(p.i).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" text-anchor="middle" font-size="'+labelFontSz+'" font-weight="700" fill="#14243A" font-family="Outfit">'+fmt(p.v,pct)+'</text>';
@@ -329,11 +371,12 @@ function buildBarSVG(ind, years, w, h){
     xl+='<text x="'+cx(i).toFixed(1)+'" y="'+(h-10)+'" text-anchor="middle" font-size="'+yrFontSz+'" fill="#51637A" font-family="Outfit" font-weight="600">'+yr+'</text>';
   });
 
-  return '<svg width="100%" height="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none">'+grid+bars+xl+'</svg>';
+  return '<svg width="100%" height="100%" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none" role="img" aria-label="Gráfico de barras: '+escHtml(ind.name)+'">'+
+    '<title>'+escHtml(ind.name)+'</title>'+grid+bars+xl+'</svg>';
 }
 
 /* ---------- Página INICIO ---------- */
-function goToFactor(i){ curFactor=i; curInd=0; location.hash='/factores'; }
+function goToFactor(i){ closeFactorPanel(); navigateToIndicator(i,0); }
 
 const ICO={
   identidad:'<path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6z"/><path d="M12 8v4M9.5 10.5 12 12l2.5-1.5"/>',
@@ -385,45 +428,41 @@ const FACTORES_INFO=[
 ];
 
 function svgIco(name){
-  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(ICO[name]||'')+'</svg>';
+  return '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(ICO[name]||'')+'</svg>';
 }
 
 function renderInicio(){
   const totalInd = DB.factors.reduce((s,f)=>s+f.indicators.length,0);
   const per = YEARS[0]+'–'+YEARS[YEARS.length-1];
 
-  const tile=(stripe,ico,ibg,ic,label,num,desc)=>
-    '<div class="ih-tile" style="--stripe:'+stripe+'">'+
-      '<div class="ih-tile__top">'+
-        '<span class="ih-tile__ico" style="--ibg:'+ibg+';--ic:'+ic+'">'+svgIco(ico)+'</span>'+
-        '<span class="ih-tile__label">'+label+'</span>'+
-      '</div>'+
-      '<b class="ih-tile__num">'+num+'</b>'+
-      '<span class="ih-tile__desc">'+desc+'</span>'+
-    '</div>';
-
   document.getElementById('inicioContent').innerHTML=
-    '<div class="ih-hero">'+
-      '<span class="ih-pill">'+per+'</span>'+
-      '<h1 class="ih-title">Cifras de Autoevaluación</h1>'+
-      '<div class="ih-sub">Acreditación institucional</div>'+
-      '<p class="ih-desc">De la Universidad de procesos a la Universidad de resultados e impactos.<br><b>Indicadores por factor</b></p>'+
-      '<div class="ih-actions">'+
-        '<button class="ih-btn ih-btn--primary" id="ihFactores">Explorar factores</button>'+
-        '<button class="ih-btn ih-btn--ghost" id="ihMetodo">Ver metodología</button>'+
+    '<article class="cover-home">'+
+      '<img class="cover-home__art" src="assets/img/cifras-autoevaluacion.webp" width="1672" height="941" '+
+        'alt="Silla construida con raíces y vegetación frente a la Sierra Nevada de Santa Marta" fetchpriority="high">'+
+      '<div class="cover-home__wash" aria-hidden="true"></div>'+
+      '<div class="cover-home__copy">'+
+        '<h1>De la Universidad<br>de procesos a la<br><em>Universidad de<br>resultados e impactos</em></h1>'+
+        '<p>Cifras de autoevaluación para la acreditación institucional de la Universidad del Magdalena.</p>'+
+        '<div class="cover-home__actions">'+
+          '<button class="cover-home__btn cover-home__btn--primary" id="ihFactores">Explorar indicadores '+svgIco('gochev')+'</button>'+
+          '<button class="cover-home__btn cover-home__btn--quiet" id="ihMetodo">Conocer la metodología</button>'+
+        '</div>'+
+        '<dl class="cover-home__metrics">'+
+          '<div><dt>Factores</dt><dd>'+DB.factors.length+'</dd></div>'+
+          '<div><dt>Indicadores</dt><dd>'+totalInd+'</dd></div>'+
+          '<div><dt>Periodo</dt><dd>'+per+'</dd></div>'+
+        '</dl>'+
       '</div>'+
-    '</div>'+
-    '<div class="ih-tiles">'+
-      tile('#0183EF','mstack','#E6F1FB','#185FA5','Factores',DB.factors.length,'Factores del modelo de acreditación')+
-      tile('#A5CA00','mhist','#EAF3DE','#3B6D11','Indicadores',totalInd,'Indicadores con serie histórica')+
-      tile('#FF9400','mcal','#FAEEDA','#854F0B','Periodo',YEARS.length+' años','Serie continua '+per)+
-    '</div>';
+      '<div class="cover-home__folio" aria-hidden="true"><span>Autoevaluación</span><b>'+per+'</b></div>'+
+    '</article>';
 
   document.getElementById('ihFactores').onclick=()=>{ location.hash='/factores'; };
   document.getElementById('ihMetodo').onclick=()=>{ location.hash='/metodologia'; };
 }
 
 /* Modal grande de detalle del factor */
+let factorPanelTrigger=null;
+
 function openFactorPanel(i){
   const f=FACTORES_INFO[i];
   const full=DB.factors[i] ? DB.factors[i].factor : f.short;
@@ -450,8 +489,8 @@ function openFactorPanel(i){
     '<div class="fdlg__head">'+
       '<span class="fdlg__ico">'+svgIco(f.ico)+'</span>'+
       '<div class="fdlg__titles"><span class="fdlg__eyebrow">Factor '+f.n+' · Acreditación institucional</span>'+
-      '<h2>'+escHtml(f.short)+'</h2></div>'+
-      '<button class="fdlg__close" aria-label="Cerrar" onclick="closeFactorPanel()">&times;</button>'+
+      '<h2 id="factorPanelTitle">'+escHtml(f.short)+'</h2></div>'+
+      '<button class="fdlg__close" type="button" aria-label="Cerrar detalle del factor">&times;</button>'+
     '</div>'+
     '<div class="fdlg__body">'+
       '<div class="fdlg__full">'+escHtml(full)+'</div>'+
@@ -462,7 +501,10 @@ function openFactorPanel(i){
       '<span class="fdlg__src">Fuente: CNA · Lineamientos de acreditación institucional en alta calidad</span>'+
       '<button class="fdlg__cta" data-i="'+i+'">'+(cnt===1?'Ver el indicador del factor':'Ver los '+cnt+' indicadores del factor')+' '+svgIco('gochev')+'</button>'+
     '</div>';
+  factorPanelTrigger=document.activeElement;
+  panel.setAttribute('aria-labelledby','factorPanelTitle');
   panel.querySelector('.fdlg__cta').onclick=()=>goToFactor(i);
+  panel.querySelector('.fdlg__close').onclick=closeFactorPanel;
   panel.scrollTop=0;
   const body=panel.querySelector('.fdlg__body'); if(body) body.scrollTop=0;
   
@@ -470,14 +512,32 @@ function openFactorPanel(i){
   if(ov) ov.classList.add('show');
   panel.classList.add('show');
   panel.setAttribute('aria-hidden','false');
+  const background=document.querySelector('#metodologiaContent .doc');
+  if(background) background.setAttribute('inert','');
   document.body.classList.add('no-scroll');
+  panel.querySelector('.fdlg__close').focus();
 }
 
 function closeFactorPanel(){
   const p=document.getElementById('ptPanel'); if(!p) return;
   p.classList.remove('show'); p.setAttribute('aria-hidden','true');
   const o=document.getElementById('ptOverlay'); if(o) o.classList.remove('show');
+  const background=document.querySelector('#metodologiaContent .doc');
+  if(background) background.removeAttribute('inert');
   document.body.classList.remove('no-scroll');
+  if(factorPanelTrigger && document.contains(factorPanelTrigger)) factorPanelTrigger.focus();
+  factorPanelTrigger=null;
+}
+
+function trapFactorPanelFocus(e){
+  const p=document.getElementById('ptPanel');
+  if(!p || !p.classList.contains('show') || e.key!=='Tab') return;
+  const focusable=[...p.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+    .filter(el=>!el.disabled && !el.hidden);
+  if(!focusable.length) return;
+  const first=focusable[0], last=focusable[focusable.length-1];
+  if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
 }
 
 /* ---------- Página METODOLOGÍA ---------- */
@@ -504,7 +564,7 @@ function renderMetodologia(){
       '</div>'+
       '<div class="pt-grid pt-grid--flow">'+cards+'</div>'+
     '</div>'+
-    '<div class="pt-overlay" id="ptOverlay"></div>'+
+    '<div class="pt-overlay" id="ptOverlay" aria-hidden="true"></div>'+
     '<div class="fdlg" id="ptPanel" role="dialog" aria-modal="true" aria-hidden="true"></div>';
 
   document.querySelectorAll('#metodologiaContent .pt-card').forEach(c=>c.onclick=()=>openFactorPanel(+c.dataset.i));
@@ -532,7 +592,7 @@ function renderDatos(){
     ? 'Factor '+DB.factors[datosFactor].n+' · '+DB.factors[datosFactor].indicators.length+' indicadores · '+per
     : DB.factors.length+' factores · '+total+' indicadores · '+per;
 
-  const yh=YEARS.map((y,i)=>'<th class="dz-yr'+(i===YEARS.length-1?' dz-yr--last':'')+'">'+y+'</th>').join('');
+  const yh=YEARS.map((y,i)=>'<th scope="col" class="dz-yr'+(i===YEARS.length-1?' dz-yr--last':'')+'">'+y+'</th>').join('');
 
   const body=filtered.map(r=>{
     const cells=r.ind.values.map((v,i)=>{
@@ -548,7 +608,7 @@ function renderDatos(){
   document.getElementById('datosContent').innerHTML=
     '<div class="datos-head">'+
       '<div><div class="eyebrow">Datos</div>'+
-      '<h2>Tabla completa de indicadores</h2>'+
+      '<h1>Tabla completa de indicadores</h1>'+
       '<p>'+sub+'</p></div>'+
       '<div class="datos-dl">'+
         '<a class="btn-dl btn-dl--primary" href="data/datos_indicadores.json" download>'+svgIco('dl')+'JSON</a>'+
@@ -557,19 +617,20 @@ function renderDatos(){
     '</div>'+
     '<div class="dz-controls">'+
       '<div class="search dz-search">'+
-        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>'+
-        '<input id="datosQ" placeholder="Buscar indicador o factor…" value="'+escHtml(datosQuery)+'">'+
+        '<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>'+
+        '<label class="sr-only" for="datosQ">Buscar indicador o factor</label>'+
+        '<input id="datosQ" name="indicador" type="search" autocomplete="off" placeholder="Ej.: matrícula o investigación…" value="'+escHtml(datosQuery)+'">'+
       '</div>'+
       '<span id="ddDatosLbl" class="sr-only">Filtrar por factor</span>'+
       '<div class="dd dz-dd" id="ddDatos"></div>'+
     '</div>'+
     '<div class="dz-table-wrap">'+
-      '<table class="dz-tbl"><thead><tr>'+
-        '<th class="dz-fac">Fac.</th><th class="dz-name">Indicador</th>'+yh+
+      '<table class="dz-tbl"><caption class="sr-only">Indicadores institucionales por factor y año</caption><thead><tr>'+
+        '<th scope="col" class="dz-fac">Fac.</th><th scope="col" class="dz-name">Indicador</th>'+yh+
       '</tr></thead>'+
       '<tbody>'+(body||'<tr><td colspan="'+(YEARS.length+2)+'" class="empty">Sin coincidencias.</td></tr>')+'</tbody></table>'+
     '</div>'+
-    '<div class="dz-count">Mostrando '+filtered.length+' de '+total+'</div>';
+    '<div class="dz-count" role="status" aria-live="polite">Mostrando '+filtered.length+' de '+total+'</div>';
 
   const inp=document.getElementById('datosQ');
   inp.oninput=e=>{ datosQuery=e.target.value; const pos=e.target.selectionStart; renderDatos();
@@ -581,7 +642,7 @@ function renderDatos(){
   
   document.getElementById('dlCsv').onclick=downloadCSV;
   document.querySelectorAll('#datosContent .dz-link').forEach(b=>b.onclick=()=>{
-    curFactor=+b.dataset.fi; curInd=+b.dataset.ii; location.hash='/factores';
+    navigateToIndicator(+b.dataset.fi,+b.dataset.ii);
   });
 }
 
@@ -596,21 +657,24 @@ function downloadCSV(){
   const blob=new Blob(['﻿'+lines.join('\r\n')], {type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');
-  a.href=url; a.download='unimagdalena_indicadores_2020-2025.csv';
+  a.href=url; a.download='unimagdalena_indicadores_'+YEARS[0]+'-'+YEARS[YEARS.length-1]+'.csv';
   document.body.appendChild(a); a.click(); a.remove();
   URL.revokeObjectURL(url);
 }
 
-/* ---------- Colapsar/expandir el sidebar (Escritorio) ---------- */
-function setSidebarCollapsed(on){
+/* ---------- Fijar o auto-colapsar el sidebar (Escritorio) ---------- */
+function setSidebarPinned(pinned){
   const layout = document.querySelector('.layout');
-  if(layout) layout.classList.toggle('is-collapsed', on);
+  if(layout){
+    layout.classList.toggle('is-pinned', pinned);
+    layout.classList.toggle('is-collapsed', !pinned);
+  }
   const btn=document.getElementById('sbToggle');
   if(btn){
-    btn.setAttribute('aria-label', on?'Expandir menú':'Contraer menú');
-    btn.title = on?'Expandir menú':'Contraer menú';
+    btn.setAttribute('aria-label', pinned?'Ocultar menú':'Mostrar menú permanentemente');
+    btn.title = pinned?'Ocultar menú':'Mostrar menú permanentemente';
+    btn.setAttribute('aria-pressed', String(pinned));
   }
-  try{ localStorage.setItem('sbCollapsed', on?'1':'0'); }catch(e){}
 }
 
 /* ---------- Eventos globales ---------- */
@@ -626,20 +690,27 @@ function wireEvents(){
   const sbOv = document.getElementById('sbOverlay');
   if(sbOv) sbOv.onclick = closeMobileMenu;
 
-  // Sidebar colapsable en escritorio
-  let collapsed=false;
-  try{ collapsed = localStorage.getItem('sbCollapsed')==='1'; }catch(e){}
-  setSidebarCollapsed(collapsed);
+  // Compacto por defecto; puede fijarse abierto con el botón.
+  setSidebarPinned(false);
   
   const sbToggle = document.getElementById('sbToggle');
-  if(sbToggle) sbToggle.onclick=()=>
-    setSidebarCollapsed(!document.querySelector('.layout').classList.contains('is-collapsed'));
+  if(sbToggle) sbToggle.onclick=()=>{
+    const nextPinned=!document.querySelector('.layout').classList.contains('is-pinned');
+    setSidebarPinned(nextPinned);
+    // Al ocultar, liberar el foco evita que :focus-within lo mantenga desplegado.
+    if(!nextPinned) sbToggle.blur();
+  };
   
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeFactorPanel(); closeMobileMenu(); } });
+  document.addEventListener('keydown',e=>{
+    trapFactorPanelFocus(e);
+    if(e.key==='Escape'){ closeFactorPanel(); closeMobileMenu(); }
+  });
+  window.addEventListener('resize', syncSidebarAccessibility);
+  syncSidebarAccessibility();
 
   // Dropdowns de la barra de filtros en Factores
-  ddFactor = makeDropdown(document.getElementById('ddFactor'), 'ddFactorLbl', i=>{ curFactor=i; curInd=0; renderFactores(); });
-  ddInd = makeDropdown(document.getElementById('ddInd'), 'ddIndLbl', i=>{ curInd=i; renderContent(); });
+  ddFactor = makeDropdown(document.getElementById('ddFactor'), 'ddFactorLbl', i=>navigateToIndicator(i,0));
+  ddInd = makeDropdown(document.getElementById('ddInd'), 'ddIndLbl', i=>navigateToIndicator(curFactor,i));
 }
 
 /* ---------- Merge de pares con serie Nacional ---------- */
@@ -667,12 +738,12 @@ async function init(){
     if(!res.ok) throw new Error('HTTP '+res.status);
     DB = await res.json();
   }catch(err){
-    const contentEl = document.getElementById('content');
-    if(contentEl){
-      contentEl.innerHTML =
-        '<div class="empty">No se pudo cargar <b>data/datos_indicadores.json</b>.<br>'+
-        'Abre el proyecto desde un servidor local (ver README): <code>python -m http.server 8000</code></div>';
-    }
+    const contentEl = document.getElementById('inicioContent');
+    document.getElementById('page-inicio').classList.add('is-active');
+    if(contentEl) contentEl.innerHTML =
+      '<div class="empty app-error" role="alert"><h1>No se pudieron cargar los indicadores</h1>'+
+      '<p>Comprueba que <b>data/datos_indicadores.json</b> existe y abre el proyecto desde un servidor local.</p>'+
+      '<code>python -m http.server 8000</code></div>';
     console.error(err);
     return;
   }

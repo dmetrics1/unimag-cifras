@@ -3,19 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#00294B">
 <title>Unimagdalena en Cifras · Indicadores por Factor 2020–2025</title>
 <meta name="description" content="Tablero interactivo de indicadores institucionales de la Universidad del Magdalena por factor de acreditación, serie 2020–2025.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="assets/img/escudo-unimagdalena.png">
-<link rel="stylesheet" href="assets/css/tokens.css?v=1.3.0">
+<link rel="stylesheet" href="assets/css/tokens.css?v=1.3.12">
 </head>
 <body>
 <!-- Encabezado superior exclusivo para pantallas móviles / tablets (< 920px) -->
 <header class="mobile-header">
   <div class="mh-brand">
-    <div class="mh-logo"><img src="assets/img/escudo-unimagdalena.png" alt="Escudo Universidad del Magdalena"></div>
+    <div class="mh-logo"><img src="assets/img/escudo-unimagdalena.png" width="198" height="192" alt="Escudo Universidad del Magdalena"></div>
     <div class="mh-title">UNIMAGDALENA<span>Indicadores por Factor</span></div>
   </div>
   <button class="mb-menu-btn" id="mbMenuBtn" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="sidebar">
@@ -23,14 +24,16 @@
   </button>
 </header>
 <div class="sb-overlay" id="sbOverlay" aria-hidden="true"></div>
+<a class="skip-link" href="#mainContent">Saltar al contenido principal</a>
 
-<div class="layout">
+<div class="layout is-collapsed">
   <aside class="sidebar" id="sidebar" role="navigation" aria-label="Navegación principal">
     <div class="sb-brand">
-      <div class="sb-logo"><img src="assets/img/escudo-unimagdalena.png" alt="Escudo Universidad del Magdalena"></div>
+      <div class="sb-logo"><img src="assets/img/escudo-unimagdalena.png" width="198" height="192" alt="Escudo Universidad del Magdalena"></div>
       <div class="sb-title">UNIMAGDALENA<span>Indicadores por Factor</span></div>
-      <button class="sb-toggle" id="sbToggle" type="button" aria-label="Contraer menú" title="Contraer menú">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/></svg>
+      <button class="sb-toggle" id="sbToggle" type="button" aria-label="Mostrar menú permanentemente" aria-pressed="false" title="Mostrar menú permanentemente">
+        <svg class="sb-toggle__show" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/><path d="m13 9 3 3-3 3"/></svg>
+        <svg class="sb-toggle__hide" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/><path d="m16 9-3 3 3 3"/></svg>
       </button>
     </div>
 
@@ -55,10 +58,10 @@
       </button>
     </nav>
 
-    <div class="sb-foot"><b>Cifras de Autoevaluación</b><br>Serie 2020–2025 · Oficina de Planeación</div>
+    <div class="sb-foot"><span class="sb-foot-full"><b>Oficina Asesora de Planeación</b></span><span class="sb-foot-short"><b>OAP</b></span></div>
   </aside>
 
-  <div class="content">
+  <main class="content" id="mainContent" tabindex="-1">
 
     <!-- ===================== INICIO ===================== -->
     <section class="page" id="page-inicio">
@@ -70,7 +73,7 @@
       <div class="fx-head">
         <div class="fx-band">
           <div class="eyebrow" id="fEyebrow">Factor 1</div>
-          <h2 id="fTitle"></h2>
+          <h1 id="fTitle"></h1>
           <p id="fSub"></p>
         </div>
         <div class="fx-filters">
@@ -97,9 +100,9 @@
       <div id="datosContent"></div>
     </section>
 
-  </div>
+  </main>
 </div>
 
-<script src="assets/js/app.js?v=1.3.0"></script>
+<script src="assets/js/app.js?v=1.3.12"></script>
 </body>
 </html>

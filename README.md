@@ -23,7 +23,7 @@ comparación frente al nivel nacional cuando aplica).
 
 ## Secciones del tablero
 
-- **Inicio** — portada con la presentación y las cifras generales.
+- **Inicio** — portada editorial azul/blanco con la imagen institucional de la silla, acciones de navegación y cifras generales integradas.
 - **Factores** — vista principal: eliges factor + indicador y ves su gráfico y KPIs.
 - **Datos** — tabla completa con buscador, filtro por factor y descarga (JSON / CSV).
 - **Metodología** — los 12 factores; al hacer clic se abre la ficha oficial (CNA).
@@ -111,9 +111,9 @@ corresponda a lo que necesitas:
    ```
 3. Recarga el tablero. No hay que tocar el HTML ni el CSS.
 
-> ⚠️ **Importante:** `generar_json.py` **no** genera los campos `chart` (barras/línea)
-> ni `dual` (comparación nacional). Están documentados en `data/tipos_grafico.json` y
-> deben reponerse tras regenerar. Ver el detalle en
+> `generar_json.py` conserva automáticamente los campos `chart` (barras/línea) y
+> `dual` (comparación nacional) usando `data/tipos_grafico.json` como fuente
+> principal y el JSON existente como respaldo. Ver el detalle en
 > [docs/GUIA_DESARROLLADOR.md](docs/GUIA_DESARROLLADOR.md).
 
 **Archivos fuente no versionados:** el sitio solo necesita `data/datos_indicadores.json`.

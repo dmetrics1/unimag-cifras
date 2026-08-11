@@ -268,7 +268,7 @@ si falla el `fetch`, el tablero sigue funcionando con textos de respaldo.
 
 Documenta, por indicador, el tipo de gráfico (`chart`) y el flag `dual`,
 mapeados por coincidencia de valores contra los gráficos embebidos en el Word
-oficial del informe de reacreditación. Es material de **procedencia /
+oficial del informe de acreditación. Es material de **procedencia /
 documentación**: no lo consume `app.js` en runtime (los campos ya están
 integrados en `datos_indicadores.json`). Sus contadores registran `92` filas
 totales y `87` mapeadas.
@@ -502,8 +502,7 @@ La adaptación a distintos tamaños vive por completo en
 fluida con `clamp()`, media queries) más el redibujado por `ResizeObserver` de
 los gráficos. Existe un encabezado móvil (`.mobile-header`) y un menú lateral
 tipo *drawer* con overlay para pantallas menores a 920 px, y un sidebar
-colapsable en escritorio (estado persistido en `localStorage`, clave
-`sbCollapsed`). El detalle de breakpoints y la regla "sin scroll" se documenta
+auto-colapsable en escritorio (se expande con hover/foco y puede fijarse abierto).
+El detalle de breakpoints y la regla "sin scroll" se documenta
 en [RESPONSIVE.md](RESPONSIVE.md).
 ```
-

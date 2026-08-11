@@ -57,10 +57,10 @@ Los tokens de color, tipografía, radios y sombras de la UI viven en `:root` de 
 **Estilos clave.** `.sidebar` es `position: fixed` con gradiente azul profundo (`#001D39 → #00294B`), `border-radius: 26px` y márgenes de 24 px (queda "flotando"). Ancho vía token `--sidebar-w: 248px`. La `.content` se separa con `margin-left: 296px`.
 
 **Comportamiento / interacción.**
-- **Colapsar:** el botón `.sb-toggle` (#sbToggle) alterna la clase `.is-collapsed` sobre `.layout` mediante `setSidebarCollapsed(on)`. En estado colapsado la sidebar baja a `72px`, se ocultan `.sb-title`, `.sb-label` y `.sb-foot`, y los `.nav__item` se centran sin texto. El estado se **persiste en `localStorage`** (clave `sbCollapsed`) y se restaura en `wireEvents()`.
+- **Auto-colapsar:** el sidebar inicia como riel de `72px`, se expande temporalmente con `:hover`/`:focus-within` y vuelve a compactarse al salir. El botón `.sb-toggle` permite fijarlo abierto mediante `setSidebarPinned(pinned)`.
 - El icono del botón es un SVG de "panel lateral" (rectángulo con divisoria).
 
-**Dependencias.** `setSidebarCollapsed()`, `wireEvents()` (cablea el click y lee `localStorage`). Contiene el componente **Navegación (#4)**. En móvil este mismo `<aside>` se transforma en **Drawer (#3)**.
+**Dependencias.** `setSidebarPinned()`, `wireEvents()` (cablea el botón de fijación). Contiene el componente **Navegación (#4)**. En móvil este mismo `<aside>` se transforma en **Drawer (#3)**.
 
 ---
 
@@ -477,7 +477,7 @@ Cada ítem es un `<button>` con `data-page` (uno de `inicio | factores | datos |
 
 ## 13. Footer del sidebar
 
-**Propósito.** Pie de la sidebar con el crédito institucional del tablero.
+**Propósito.** Pie de la sidebar con el crédito de la **Oficina Asesora de Planeación**.
 
 **Estructura HTML (estática en `index.html`).**
 
@@ -487,9 +487,9 @@ Cada ítem es un `<button>` con `data-page` (uno de `inicio | factores | datos |
 
 **Dónde se genera.** Estático en `index.html` (línea 58).
 
-**Estilos clave.** `.sb-foot`: `margin-top: auto` (lo empuja al fondo de la sidebar flex), borde superior sutil y texto tenue. `.sb-foot b` resalta el nombre del tablero.
+**Estilos clave.** `.sb-foot`: `margin-top: auto` (lo empuja al fondo de la sidebar flex), borde superior sutil y texto tenue. `.sb-foot-full` muestra el nombre completo de la oficina y `.sb-foot-short` muestra **OAP** en el riel compacto.
 
-**Comportamiento / interacción.** No interactivo. Se **oculta** cuando la sidebar está colapsada (`.layout.is-collapsed .sb-foot { display: none }`) y en el drawer móvil se muestra normalmente.
+**Comportamiento / interacción.** No interactivo. Cuando la sidebar está compacta muestra **OAP**; al expandirse por hover, foco o fijación muestra **Oficina Asesora de Planeación**. En el drawer móvil se muestra el nombre completo.
 
 **Dependencias.** Ninguna funcional; su visibilidad depende del estado de colapso de la sidebar (#1).
 
@@ -499,7 +499,7 @@ Cada ítem es un `<button>` con `data-page` (uno de `inicio | factores | datos |
 
 | # | Componente | Marcado | Función JS clave | Clase raíz |
 |---|---|---|---|---|
-| 1 | Sidebar | `index.html` | `setSidebarCollapsed()` | `.sidebar` |
+| 1 | Sidebar | `index.html` | `setSidebarPinned()` | `.sidebar` |
 | 2 | Mobile Header | `index.html` | `toggleMobileMenu()` | `.mobile-header` |
 | 3 | Drawer + Overlay | `index.html` | `openMobileMenu/closeMobileMenu` | `.sidebar.is-open` / `.sb-overlay` |
 | 4 | Navegación | `index.html` | `showPage()` / `router()` | `.nav--pages` / `.nav__item` |

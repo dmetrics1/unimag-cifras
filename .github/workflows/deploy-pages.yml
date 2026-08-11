@@ -23,6 +23,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validar datos y sintaxis
+        run: |
+          python scripts/validar_proyecto.py
+          python -m py_compile scripts/generar_json.py scripts/validar_proyecto.py
+          node --check assets/js/app.js
       - name: Configurar Pages
         uses: actions/configure-pages@v5
       - name: Subir artefacto (raíz del repo)

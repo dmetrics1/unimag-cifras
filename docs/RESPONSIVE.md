@@ -6,7 +6,7 @@
 
 - `assets/css/tokens.css` — sección 4 "MEDIA QUERIES PARA ADAPTACIÓN MÓVIL" (líneas 1100–1298) y el `:root` con tokens fluidos y safe-areas (líneas 10–63).
 - `index.html` — `<header class="mobile-header">`, `#sbOverlay`, `.sidebar` (líneas 15–59).
-- `assets/js/app.js` — `openMobileMenu` / `closeMobileMenu` / `toggleMobileMenu` (líneas 52–77), `setSidebarCollapsed` (líneas 651–661), `mountChart` + `ResizeObserver` (líneas 263–279), cableado de eventos (líneas 663–693).
+- `assets/js/app.js` — `openMobileMenu` / `closeMobileMenu` / `toggleMobileMenu`, `setSidebarPinned`, `mountChart` + `ResizeObserver` y cableado de eventos.
 
 Documentación relacionada:
 
@@ -66,9 +66,9 @@ Reglas base en `tokens.css`, sección 2 (líneas 163–383):
 
 - **Fijo y flotante:** `position: fixed`, anclado con `top/left/bottom: 24px`, ancho `--sidebar-w: 248px` (línea 47), con esquinas redondeadas (`border-radius: 26px`) y sombra. No se desplaza con el scroll.
 - **El contenido cede espacio:** `.content` usa `margin-left: 296px` (línea 377) = 248px del sidebar + 24px de aire a cada lado. **No se usa overlap**; el contenido literalmente empieza a la derecha del panel.
-- **Colapsable a 72px:** al añadir la clase `.is-collapsed` al `.layout`, el sidebar encoge a `width: 72px` y el contenido reajusta su `margin-left` a `120px` (líneas 348–357). Se ocultan textos (`.sb-title`, `.sb-label`, `.sb-foot`, `.nav__txt`) y los ítems se centran, quedando solo los íconos.
-- **Botón de colapso `#sbToggle`:** ícono de "panel" ubicado junto al título (`index.html`, líneas 32–34). Solo existe en escritorio; en móvil se oculta con `display: none !important` (línea 1132–1134).
-- **Estado recordado:** `setSidebarCollapsed(on)` (`app.js`, líneas 651–661) alterna la clase y persiste la preferencia en `localStorage` bajo la clave **`sbCollapsed`** (`'1'`/`'0'`). Al cargar, `wireEvents()` lee ese valor y restaura el estado (líneas 677–679). También actualiza `aria-label`/`title` del botón ("Contraer menú" ↔ "Expandir menú").
+- **Compacto a 72px por defecto:** `.layout.is-collapsed` muestra un riel de iconos y reajusta el contenido a `margin-left: 120px`.
+- **Expansión automática coordinada:** `:hover` y `:focus-within` despliegan temporalmente el panel y, mediante el selector hermano `~ .content`, llevan el margen del contenido de `120px` a `296px`. Así el menú nunca cubre la información.
+- **Botón de fijación `#sbToggle`:** alterna `.is-pinned` mediante `setSidebarPinned()` y actualiza `aria-pressed`. Solo existe en escritorio; en móvil se oculta.
 
 **Por qué `margin-left` en vez de un layout flex puro:** el sidebar es `position: fixed` (sale del flujo), así que el contenido necesita un margen explícito para no quedar debajo. La transición `margin-left .25s ease` (línea 382) sincroniza el deslizamiento del contenido con el del panel al colapsar.
 
@@ -91,12 +91,14 @@ stateDiagram-v2
     [*] --> Movil
 
     state "ESCRITORIO (>= 920px)" as Escritorio {
-        [*] --> Expandido
-        Expandido --> Colapsado: click #sbToggle\n(setSidebarCollapsed(true))
-        Colapsado --> Expandido: click #sbToggle\n(setSidebarCollapsed(false))
-        note right of Colapsado
+        [*] --> Compacto
+        Compacto --> VistaTemporal: hover / focus-within
+        VistaTemporal --> Compacto: pointer / foco sale
+        Compacto --> Fijado: click #sbToggle\n(setSidebarPinned(true))
+        Fijado --> Compacto: click #sbToggle\n(setSidebarPinned(false))
+        note right of Compacto
             width 72px, solo iconos
-            estado en localStorage('sbCollapsed')
+            estado inicial de escritorio
         end note
     }
 
@@ -367,5 +369,5 @@ El mínimo recomendado de 44px de alto para objetivos táctiles se respeta en lo
 
 1. **Todo lo móvil está en la sección 4 de `tokens.css`** (`@media (max-width: 919px)`). Si un cambio no debe afectar escritorio, va ahí.
 2. **Un solo breakpoint real: 920px.** Los rangos 480–919 y 576–919 solo afinan columnas dentro de móvil.
-3. **El sidebar es un componente con doble personalidad:** panel fijo colapsable (escritorio, estado en `localStorage`) o drawer con overlay y `body.no-scroll` (móvil). La lógica está en `app.js`.
+3. **El sidebar es un componente con doble personalidad:** riel auto-expandible y fijable (escritorio) o drawer con overlay y `body.no-scroll` (móvil). La lógica está en `app.js`.
 4. **`dvh`, `clamp()`, `env()` y `ResizeObserver`** son las cuatro herramientas que hacen el layout continuo y sin saltos; entiéndelas antes de tocar alturas o tipografía.

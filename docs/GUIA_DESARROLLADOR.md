@@ -461,12 +461,12 @@ en `scripts/`, documentación en `docs/`. La lógica no conoce rutas absolutas.
 **Al actualizar valores de indicadores existentes**
 - [ ] Editar el Excel (hoja `Matriz Indicadores`).
 - [ ] `python scripts/generar_json.py`.
-- [ ] **Reponer `chart`/`dual`** desde `tipos_grafico.json` (§5).
+- [ ] Verificar que `chart`/`dual` se conservaron desde `tipos_grafico.json` (§5).
 - [ ] Recargar con **Ctrl+F5** y revisar el gráfico y la tabla de *Datos*.
 
 **Al agregar un indicador**
 - [ ] Fila nueva en Excel → regenerar.
-- [ ] Asignar `chart` en el JSON y registrarlo en `tipos_grafico.json`.
+- [ ] Registrar `chart` en `tipos_grafico.json` antes de regenerar el JSON.
 - [ ] Si es comparado, añadir la fila `… (Nacional)` en el Excel.
 - [ ] Verificar el formato `%` (nombre vs. `CLAVES_PCT`).
 
